@@ -11,7 +11,7 @@
           <a href="#">Дате рождения</a>
        </div>
     </div>
-          <input type="text" v-model="search">
+          <input type="text">
           <input type="submit" class="search-btn" value="Поиск">
           <div class="action-btns">
               <router-link to="/staffregister"><button class="staff-add-btn"  @click="goToRegister()"><img src="@/assets/plus.svg">Добавить Сотрудника</button></router-link>
