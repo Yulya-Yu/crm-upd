@@ -29,7 +29,7 @@
                    <button class="options-btn"><img src="@/assets/dots.svg" /></button>
                    <div id="options-content">
                      <router-link to="/staffedit"><button @click="goToEdit()"><img src="@/assets/edit.svg" class="options-icon"> Редактировать</button></router-link>
-                      <button class="delete-btn" id="show-modal" @click="showModal = true"><img src="@/assets/del.svg" class="options-icon">Уволить</button>   
+                      <button class="delete-btn" @click="showModal = true"><img src="@/assets/del.svg" class="options-icon">Уволить</button>   
                    </div>
                 </div>
             </div>
