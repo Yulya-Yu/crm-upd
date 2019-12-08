@@ -29,7 +29,7 @@
                    <button class="options-btn"><img src="@/assets/dots.svg" /></button>
                    <div id="options-content">
                      <router-link to="/staffedit"><button @click="goToEdit()"><img src="@/assets/edit.svg" class="options-icon"> Редактировать</button></router-link>
-                      <button class="delete-btn" @click="showModal = true"><img src="@/assets/del.svg" class="options-icon">Уволить</button>   
+                       <modal></modal>
                    </div>
                 </div>
             </div>
@@ -38,19 +38,7 @@
                 <p class="exp">стаж: 3 года 2 месяца</p>
             </div>
             <div class="contacts">
-                    <div class="modal-wrapper">
-                         <div class="modal" v-if="showModal" @close="showModal = false">
-                             <p>Вы уверены что хотите уволить сторудника " {{staff.name}} " ?</p>
-                             <div class="confirm-btns">
-                             <button @click="(deleteStaff(staff.id)), (activateConfirm = true), (showModal=false)" class="delete-btn-modal">Да</button>
-                             <button @click="showModal = false" class="cancel-btn">Нет</button>
-                             </div>
-                         </div>
-                         <div class="modal" v-if="activateConfirm" @close="activateConfirm=false">
-                             <p>Сотрудник " {{staff.name}} " успешно удален</p>
-                             <button class="confirm-btns cancel-btn" @click="activateConfirm=false">ОК</button>
-                         </div>
-                    </div>
+
                 <div class="contact-data">
                     <h5>Контакты:</h5>
                     <p><img src="@/assets/tel.svg" class="phone-icon"/>{{staff.phone}}</p>
@@ -74,22 +62,12 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-//import modal from '@/components/staff/Modal';
+import modal from './Modal';
 export default {
-//data() {
-//    return {
-//        search: ''
-//    }
-// },
   name: 'stafflist', 
         components:{
+        'modal': modal
     },
-      data() {
-          return {
-    showModal: false,
-    activateConfirm: false
-          }
-  },
   computed: mapGetters(['allStaff']),
 // filteredStaff: function() {
 //    return this.stafflist.filter((staff) => {
@@ -190,6 +168,9 @@ p {
   display: flex;
   align-items: center;
   cursor: pointer;
+}
+#options-content button:hover {
+    background-color: #18181E;
 }
 /* Change color of dropdown links on hover */
 .dropdown-content a:hover {
@@ -296,44 +277,7 @@ margin: 30px 30px 30px 0;
 display: flex;
 flex-direction: column;
 }
-.modal {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-    width: 300px;
-    position: absolute;
-    height: 124px;
-    z-index: 10;
-    background: #353541;
-    margin-right: 10px;
-}
-.modal p {
-width: 80%;
-font-size: 16px;
-line-height: 20px;
-text-align: center;
-color: #C4C4C4;
-margin-bottom: 20px;
-}
-.confirm-btns button {
-border: none;
-font-size: 16px;
-line-height: 20px;
-text-align: center;
-color: #353541;
-}
-.delete-btn-modal {
-width: 39px;
-height: 24px;
-background: #FF7373;
-margin-right: 20px;
-}
-.cancel-btn {
-width: 46px;
-height: 24px;
-background: #C4C4C4;
-}
+
 .header {
     display: flex;
     flex-direction: row; 
