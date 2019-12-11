@@ -3,23 +3,25 @@
 
     <div class="staff-nav">
        <div class="dropdown">
-          <button class="dropbtn">Сортировать по <i class="fas fa-caret-down"></i></button>
-          <div class="dropdown-content">
-          <a href="#">Стаж</a>
-          <a href="#">Количеству сделок</a>
-          <a href="#">Фамилии</a>
-          <a href="#">Дате рождения</a>
+<select v-model="select" class="dropbtn">
+    <option selected disabled value="">Сортировать по:</option>
+    <option>Стажу</option>
+    <option>Количеству сделок</option>
+    <option>Фамилии</option>
+    <option>Дате Рождения</option>
+</select>
        </div>
-    </div>
-          <input type="text">
-          <input type="submit" class="search-btn" value="Поиск">
+       <div class="search-field">
+              <input type="text" v-model="search" @input="onChange">
+              <input type="submit" class="search-btn" value="поиск" @submit.prevent="filterStaff">
+       </div>
           <div class="action-btns">
               <router-link to="/staffregister"><button class="staff-add-btn"  @click="goToRegister()"><img src="@/assets/plus.svg">Добавить Сотрудника</button></router-link>
-              <button class="exit-btn"><img src="@/assets/exit.svg"></button>
+              <router-link to="/login"><button class="exit-btn" @click="goToLogin()"><img src="@/assets/exit.svg"></button></router-link>
           </div>
     </div>
     <div class="staff-cards-container" >
-        <div class="staff-card" v-for="staff in allStaff" :key="staff.id">
+        <div class="staff-card" v-for="(staff) in filterStaff" :key="staff.id" >
             <div class="header" >
                 <div class="employee" >
                     <h5>{{staff.name}}</h5>
@@ -29,8 +31,9 @@
                    <button class="options-btn"><img src="@/assets/dots.svg" /></button>
                    <div id="options-content">
                      <router-link to="/staffedit"><button @click="goToEdit()"><img src="@/assets/edit.svg" class="options-icon"> Редактировать</button></router-link>
-                       <modal></modal>
-                   </div>
+                     <button class="delete-btn" @click="showModal=true"><img src="@/assets/del.svg" class="options-icon">Уволить</button> 
+                   <Modal />
+                   </div> 
                 </div>
             </div>
             <div class="stats">
@@ -38,7 +41,6 @@
                 <p class="exp">стаж: 3 года 2 месяца</p>
             </div>
             <div class="contacts">
-
                 <div class="contact-data">
                     <h5>Контакты:</h5>
                     <p><img src="@/assets/tel.svg" class="phone-icon"/>{{staff.phone}}</p>
@@ -51,32 +53,52 @@
                     <p>Дата выдачи:</p>
                     <p>Кем выдан:</p>
                 </div>
-
             </div>
         </div>
+    <Modal />
     </div>
     <router-link to="/deletedstaff"><button class="staff-add-btn"  @click="goToDeleted()">Удаленные Сотрудники</button></router-link>
-<router-view />
+    <router-view />
 </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import modal from './Modal';
+import Modal from './Modal';
+
+
 export default {
   name: 'stafflist', 
         components:{
-        'modal': modal
+        Modal
     },
-  computed: mapGetters(['allStaff']),
-// filteredStaff: function() {
-//    return this.stafflist.filter((staff) => {
-//        return staff.name.match(this.search);
-//    });
-//  },
+
+    data() {
+return {
+    search: '',
+    showModal: false,
+    activateConfirm: false,
+    //activeIndex: undefined
+   // staffDropArrayModal: [{modalShow: false}]
+    }
+},
+  computed: { 
+      ...mapGetters(['allStaff']),
+      filterStaff: function() {
+          let filtered = this.allStaff;
+            if (this.select) {
+            filtered = this.allStaff.filter(
+            staff => staff.sortStaff.toLowerCase() === this.select.toLowerCase()
+        );
+      }
+      return filtered;
+    }
+},
+
   methods: { 
    ...mapActions(['fetchStaff', 'deleteStaff']),
   },
+
   created() {
       this.fetchStaff();
   },
@@ -88,8 +110,12 @@ export default {
 },
     goToDeleted() {
     this.$router.push({name:'deletedstaff'});
+},
+    goToLogin() {
+    this.$router.push({name:'login'});
 }
-};
+}
+
 </script>
 
 <style scoped>
@@ -114,7 +140,7 @@ p {
 .dropbtn {
   background-color: #353541;;
   font-size: 16px;
-  line-height: 20px;
+  height: 49px;
   color: #C4C4C4;
   padding: 16px;
   border: none;
@@ -268,6 +294,66 @@ router-link {
     flex-direction: row;
     flex-wrap: wrap;
 }
+#options-content button {
+  font-size: 16px;
+  line-height: 20px;
+  color: #C4C4C4;
+  padding: 7px 10px;
+  text-decoration: none;
+  display: block; 
+  border: none;
+  background: #353541;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  width: 100%;
+}
+.options-icon {
+    margin-right: 10px;
+    width: 20px;
+    height: 20px;
+}
+#options-content button:hover {
+    background-color: #18181E;
+}
+.modal {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 300px;
+    position: absolute;
+    height: 124px;
+    z-index: 10;
+    background: #353541;
+    margin-right: 150px;
+}
+.modal p {
+width: 80%;
+font-size: 16px;
+line-height: 20px;
+text-align: center;
+color: #C4C4C4;
+margin-bottom: 20px;
+}
+.confirm-btns button {
+border: none;
+font-size: 16px;
+line-height: 20px;
+text-align: center;
+color: #353541;
+}
+.delete-btn-modal {
+width: 39px;
+height: 24px;
+background: #FF7373;
+margin-right: 20px;
+}
+.cancel-btn {
+width: 46px;
+height: 24px;
+background: #C4C4C4;
+}
 .staff-card {
 background: #F0F2F4;
 box-shadow: 0px 5px 7px rgba(0, 0, 0, 0.4);
@@ -403,14 +489,15 @@ input {
     margin-left: 30px;
 }
 }
-@media screen and (min-width: 1500px) {
+@media screen and (min-width: 1515px) {
 .staff-nav {
     justify-content: space-between;
     height: 49px;
     width: 100%;
 }
+
 .dropbtn {
-  width: 314px;
+  width: 250px;
 }
 /* Dropdown Content (Hidden by Default) */
 .dropdown-content {
@@ -422,7 +509,7 @@ width: 314px;
 }
 input {
     margin-left: 30px;
-    width: 670px;
+    width: 500px;
     padding-left: 30px;
     height: 49px;
 }
@@ -439,6 +526,11 @@ input {
 .exit-btn {
     width: 93px;
     margin-left: 30px;
+}
+}
+@media screen and (min-width: 1800px) {
+input {
+    max-width: 600px;
 }
 }
 </style>

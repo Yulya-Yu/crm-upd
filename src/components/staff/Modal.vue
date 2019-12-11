@@ -1,19 +1,19 @@
 <template>
    <div>
-        <button class="delete-btn" @click="showModal=true"><img src="@/assets/del.svg" class="options-icon">Уволить</button> 
-                    <div class="modal-wrapper">
-                         <div class="modal" v-if="showModal" @close="showModal = false">
-                             <p>Вы уверены что хотите уволить сторудника " {{staff.name}} " ?</p>
-                             <div class="confirm-btns">
-                             <button @click="(deleteStaff(staff.id)), (activateConfirm = true), (showModal=false)" class="delete-btn-modal">Да</button>
-                             <button @click="showModal = false" class="cancel-btn">Нет</button>
-                             </div>
-                         </div>
-                         <div class="modal" v-if="activateConfirm" @close="activateConfirm=false">
-                             <p>Сотрудник " {{staff.name}} " успешно удален</p>
-                             <button class="confirm-btns cancel-btn" @click="activateConfirm=false">ОК</button>
-                         </div>
-                    </div>        
+        <div class="modal-wrapper" id="staff-each" v-show="value">
+            <div class="modal" v-if="showModal" @close="showModal = false">
+                <p>Вы уверены что хотите уволить сторудника " {{staff.name}} " ?</p>
+                <div class="confirm-btns">
+                <button @click="(deleteStaff(staff.id)), (activateConfirm = true), (showModal=false)" class="delete-btn-modal">Да</button>
+                <button @click="showModal = false" class="cancel-btn">Нет</button>
+            </div>
+        </div>
+            <div class="modal" v-if="activateConfirm" @close="activateConfirm=false">
+                <p>Сотрудник " {{staff.name}} " успешно удален</p>
+                <button class="confirm-btns cancel-btn" @click="activateConfirm=false">ОК</button>
+            </div>
+    </div>
+     
    </div> 
 </template>
 
@@ -21,19 +21,32 @@
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
-    name: 'modal',
+//    props: ['id'],
+    name: 'Modal',
+    props: {
+    value: {
+    required: true
+    }
+},
     data() {
-        return {
-          showModal: false,
-          activateConfirm: false
-        }
+    return {
+    showModal: false,
+    activateConfirm: false
+    }
   },
-   computed: mapGetters(['allStaff']),
+   computed: {...mapGetters(['allStaff', 'getStaffById'])},
    methods: { 
-   ...mapActions(['deleteStaff'])
-  },
+   ...mapActions(['fetchStaff', 'deleteStaff', 'openModal']),
+    test () {
+        alert(this.showModal)
+        this.showModal = true
+    }
+   },
+     created() {
+      this.fetchStaff();
+  }
+ }
 
-}
 </script>
 
 <style scoped>

@@ -1,14 +1,18 @@
 import axios from 'axios'
 
 const state = {
-    stafflist: []
+    stafflist: [],
+    search: '',
+    showModal: false
 };
 
 const getters = {
     allStaff: (state) => {
         return state.stafflist;
+    },
+    getStaffById: (state) => id => {
+        return state.stafflist.find(staff => staff.id === id)
     }
-
 };
 
 const actions = {
@@ -30,12 +34,6 @@ const mutations = {
     setStaff: (state, stafflist) => (state.stafflist = stafflist),
     addStaff: (state, staff) => state.stafflist.unshift(staff),
     deleteStaff: (state, id) => state.stafflist = state.stafflist.filter(staff => staff.id !== id)
-        //    updateStaff(state, stafflist) {
-        //       state.stafflist = stafflist
-        //    },
-        //    addStaff(state, newStaff) {
-        //        state.posts.unshift(newStaff)
-        //    }
 };
 
 export default {

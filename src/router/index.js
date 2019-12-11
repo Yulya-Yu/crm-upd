@@ -9,6 +9,7 @@ import Orders from '../components/Orders.vue'
 import Report from '../components/Report.vue'
 import Requests from '../components/Requests.vue'
 import DeletedStaff from '../components/staff/DeletedStaff.vue'
+import Login from '../components/Login.vue'
 
 Vue.use(VueRouter)
 
@@ -57,6 +58,11 @@ const routes = [{
         path: '/deletedstaff',
         name: 'deletedstaff',
         component: DeletedStaff
+    },
+    {
+        path: '/login',
+        name: 'login',
+        component: Login
     }
 ]
 

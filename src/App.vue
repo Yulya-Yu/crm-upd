@@ -28,9 +28,11 @@ flex-direction: row;
 }
 
 a {
-  text-decoration: none;
+  text-decoration: none !important;
 }
 
-button:focus {outline:0;}
+button:focus {
+  outline:0 !important;
+  }
 
 </style>
