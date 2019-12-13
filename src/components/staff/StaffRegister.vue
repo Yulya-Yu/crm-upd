@@ -42,6 +42,7 @@
                 <!--    Date        onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'"   -->
                 <input v-if="forming[index][0].type === 'date'"
                        onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'"
+                       min="1920-01-01"
                        v-on:mousedown="clearError(index)" v-on:focus="clearError(index)" v-bind:name="forming[index][0].fieldName"
                        v-bind:class="{errorcolor: forming[index][0].borderError, succescolor: !forming[index][0].borderError}"
                        type="text" v-model="title.name"
@@ -60,11 +61,13 @@
                        v-bind:class="{errorcolor: forming[index][0].borderError, succescolor: !forming[index][0].borderError}"
                        type="text" v-model="title.name"
                        id="surname" autocomplete="off" required/>
+                <!--    Login        -->
                 <input v-if="forming[index][0].type === 'login'" maxlength="16"
                        v-on:mousedown="clearError(index)" v-on:focus="clearError(index)"
                        v-bind:class="{errorcolor: forming[index][0].borderError, succescolor: !forming[index][0].borderError}"
                        type="text" v-model="title.name"
                        id="surname" autocomplete="off" required/>
+                <!--    Password        -->
                 <input v-if="forming[index][0].type === 'password'" maxlength="16"
                        v-on:mousedown="clearError(index)" v-on:focus="clearError(index)"
                        v-bind:class="{errorcolor: forming[index][0].borderError, succescolor: !forming[index][0].borderError}"
@@ -72,6 +75,7 @@
                        id="surname" autocomplete="off" required/>
                 <label v-bind:class="{errorbordercolor: forming[index][0].borderError, succesbordercolor: !forming[index][0].borderError}" for="surname" class="label-name">
                     <span class="content-name" >{{forming[index][0].pole}}</span>
+                    <!--    Транзишоны        -->
                     <transition name="slide-fade">
                         <span v-if="forming[index][0].valid === true" class="content-name content-name-error">Обязательное поле</span>
                     </transition>
@@ -259,12 +263,12 @@
         computed:{
             isSurnameValid () {
                 // ([А-ЯЁ][а-яё]+[\-\s]?){3,}
-                let emailCodeRegex = new RegExp(/^([А-ЯЁ]{1}[а-яё]{1,49})$/)
+                let emailCodeRegex = new RegExp(/^([А-ЯЁ]{1}[а-яё]{1,25}(-{0,1}[А-ЯЁ]{1}[а-яё]{1,25})?)$/)
                 let isSurnameValid = emailCodeRegex.test(this.forming[0].name)
                 return isSurnameValid
             },
             isNameValid () {
-                let emailCodeRegex = new RegExp(/^([А-ЯЁ]{1}[а-яё]{1,49})$/)
+                let emailCodeRegex = new RegExp(/^([А-ЯЁ]{1}[а-яё]{1,25}(-{0,1}[А-ЯЁ]{1}[а-яё]{1,25})?)$/)
                 let isNameValid = emailCodeRegex.test(this.forming[1].name)
                 return isNameValid
             },
@@ -279,7 +283,6 @@
                 return isPhoneValid
             },
             isEmailValid () {
-                // eslint-disable-next-line no-useless-escape
                 let emailCodeRegex = new RegExp(/^((([0-9A-Za-z]{1}[-0-9A-z\.]{1,40}[0-9A-Za-z]{1})|([0-9А-Яа-я]{1}[-0-9А-я\.]{1,40}[0-9А-Яа-я]{1}))@([-0-9A-Za-z]{1,20}\.){1,2}[-A-Za-z]{2,4})$/)
                 let isEmailValid = emailCodeRegex.test(this.forming[4].name)
                 return isEmailValid
@@ -296,7 +299,7 @@
             },
             isPassportWhoValid () {
                 // eslint-disable-next-line no-useless-escape
-                let emailCodeRegex = new RegExp(/^([А-Яа-я]№?.?,?-? ?)+$/)
+                let emailCodeRegex = new RegExp(/^([А-Яа-я]№?.?,?-? ?)+[а-я]{1}$/)
                 let isPassportWhoValid = emailCodeRegex.test(this.forming[10].name)
                 return isPassportWhoValid
             },
