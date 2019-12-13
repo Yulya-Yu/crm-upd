@@ -100,7 +100,7 @@
             </div>
         </div>
         <button v-on:click="validationInput">
-            Зарегестрироваться
+            Редактировать
         </button>
     </div>
 </template>

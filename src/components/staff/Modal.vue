@@ -1,6 +1,6 @@
 <template>
    <div>
-        <div class="modal-wrapper" id="staff-each" v-show="value">
+        <div class="modal-wrapper">
             <div class="modal" v-if="showModal" @close="showModal = false">
                 <p>Вы уверены что хотите уволить сторудника " {{staff.name}} " ?</p>
                 <div class="confirm-btns">
@@ -21,26 +21,21 @@
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
-//    props: ['id'],
+   // props: ['allStaff'],
     name: 'Modal',
-    props: {
-    value: {
-    required: true
-    }
-},
     data() {
     return {
     showModal: false,
     activateConfirm: false
     }
   },
-   computed: {...mapGetters(['allStaff', 'getStaffById'])},
+   computed: {...mapGetters(['allStaff'])},
    methods: { 
-   ...mapActions(['fetchStaff', 'deleteStaff', 'openModal']),
+   ...mapActions(['fetchStaff', 'deleteStaff']),
     test () {
         alert(this.showModal)
         this.showModal = true
-    }
+    },
    },
      created() {
       this.fetchStaff();

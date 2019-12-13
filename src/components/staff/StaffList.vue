@@ -12,7 +12,7 @@
 </select>
        </div>
        <div class="search-field">
-              <input type="text" v-model="search" @input="onChange">
+              <input type="text">
               <input type="submit" class="search-btn" value="поиск" @submit.prevent="filterStaff">
        </div>
           <div class="action-btns">
@@ -21,7 +21,7 @@
           </div>
     </div>
     <div class="staff-cards-container" >
-        <div class="staff-card" v-for="(staff) in filterStaff" :key="staff.id" >
+        <div class="staff-card" v-for="(staff) in allStaff" :key="staff.id" >
             <div class="header" >
                 <div class="employee" >
                     <h5>{{staff.name}}</h5>
@@ -31,11 +31,24 @@
                    <button class="options-btn"><img src="@/assets/dots.svg" /></button>
                    <div id="options-content">
                      <router-link to="/staffedit"><button @click="goToEdit()"><img src="@/assets/edit.svg" class="options-icon"> Редактировать</button></router-link>
-                     <button class="delete-btn" @click="showModal=true"><img src="@/assets/del.svg" class="options-icon">Уволить</button> 
-                   <Modal />
+                     <button class="delete-btn" @click="showModal(staff.id)"><img src="@/assets/del.svg" class="options-icon">Уволить</button> 
                    </div> 
+                            <div class="modal-wrapper">
+                                <div class="modal" v-show="isModalVisible"  @close="closeModal">
+                                     <p>Вы уверены что хотите уволить сторудника " {{staff.name}} " ?</p>
+                                     <div class="confirm-btns">
+                                        <button @click="(deleteStaff(staff.id)), (activateConfirm = true), (showModal)" class="delete-btn-modal">Да</button>
+                                        <button @click="closeModal" class="cancel-btn">Нет</button>
+                                     </div>
+                                </div>
+                                <div class="modal" v-if="activateConfirm" @close="activateConfirm=false">
+                                   <p>Сотрудник " {{staff.name}} " успешно удален</p>
+                                   <button class="confirm-btns cancel-btn" @click="activateConfirm=false">ОК</button>
+                                </div>
+                            </div> 
                 </div>
             </div>
+            
             <div class="stats">
                 <p class="deals">сделки: 112</p>
                 <p class="exp">стаж: 3 года 2 месяца</p>
@@ -55,7 +68,6 @@
                 </div>
             </div>
         </div>
-    <Modal />
     </div>
     <router-link to="/deletedstaff"><button class="staff-add-btn"  @click="goToDeleted()">Удаленные Сотрудники</button></router-link>
     <router-view />
@@ -64,39 +76,48 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import Modal from './Modal';
+//import Modal from './Modal';
 
 
 export default {
   name: 'stafflist', 
         components:{
-        Modal
+    //    Modal
     },
 
     data() {
 return {
     search: '',
-    showModal: false,
+   // showModal: false,
     activateConfirm: false,
-    //activeIndex: undefined
+    activeIndex: undefined,
    // staffDropArrayModal: [{modalShow: false}]
+        isModalVisible: false,
     }
 },
   computed: { 
       ...mapGetters(['allStaff']),
-      filterStaff: function() {
-          let filtered = this.allStaff;
-            if (this.select) {
-            filtered = this.allStaff.filter(
-            staff => staff.sortStaff.toLowerCase() === this.select.toLowerCase()
-        );
-      }
-      return filtered;
-    }
+    //   filterStaff: function() {
+    //       let filtered = this.allStaff;
+    //         if (this.select) {
+    //         filtered = this.allStaff.filter(
+    //         staff => staff.sortStaff.toLowerCase() === this.select.toLowerCase()
+    //     );
+    //   }
+    //   return filtered;
+    // }
 },
 
   methods: { 
    ...mapActions(['fetchStaff', 'deleteStaff']),
+         showModal() {
+
+        this.isModalVisible = true;
+      },
+            closeModal() {
+        this.isModalVisible = false;
+      }
+
   },
 
   created() {
