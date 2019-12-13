@@ -1,6 +1,7 @@
 <template>
+<!-- test -->
     <div class="registr">
-        <a>Регистрация сотрудника</a>
+        <a>Редактирование сотрудника</a>
         <div class="pols">
             <div class="select">
                 <a>Роль:</a>
