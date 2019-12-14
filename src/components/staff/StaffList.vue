@@ -3,7 +3,7 @@
 
     <div class="staff-nav">
        <div class="dropdown">
-<select v-model="select" class="dropbtn">
+<select  class="dropbtn">
     <option selected disabled value="">Сортировать по:</option>
     <option>Стажу</option>
     <option>Количеству сделок</option>
@@ -12,8 +12,8 @@
 </select>
        </div>
        <div class="search-field">
-              <input type="text">
-              <input type="submit" class="search-btn" value="поиск" @submit.prevent="filterStaff">
+              <input type="text" >
+              <input type="submit" class="search-btn" value="поиск">
        </div>
           <div class="action-btns">
               <router-link to="/staffregister"><button class="staff-add-btn"  @click="goToRegister()"><img src="@/assets/plus.svg">Добавить Сотрудника</button></router-link>
@@ -21,40 +21,41 @@
           </div>
     </div>
     <div class="staff-cards-container" >
-        <div class="staff-card" v-for="(staff) in allStaff" :key="staff.id" >
+        <div class="staff-card" v-for="staff in allStaff" :key="staff.id" :staff="staff">
             <div class="header" >
                 <div class="employee" >
                     <h5>{{staff.name}}</h5>
                     <p>{{staff.company.name}}</p>
-                </div>
-                <div class="options-container">
+                </div>    
+            <div class="options-container">
                    <button class="options-btn"><img src="@/assets/dots.svg" /></button>
                    <div id="options-content">
                      <router-link to="/staffedit"><button @click="goToEdit()"><img src="@/assets/edit.svg" class="options-icon"> Редактировать</button></router-link>
                      <button class="delete-btn" @click="showModal(staff.id)"><img src="@/assets/del.svg" class="options-icon">Уволить</button> 
                    </div> 
-                            <div class="modal-wrapper">
-                                <div class="modal" v-show="isModalVisible"  @close="closeModal">
+
+                                <div class="modal" v-show="selectedId == staff.id">
                                      <p>Вы уверены что хотите уволить сторудника " {{staff.name}} " ?</p>
                                      <div class="confirm-btns">
-                                        <button @click="(deleteStaff(staff.id)), (activateConfirm = true), (showModal)" class="delete-btn-modal">Да</button>
+                                        <button @click="(deleteStaff(staff.id)), (closeModal), (activateConfirm=true)" class="delete-btn-modal">Да</button>
                                         <button @click="closeModal" class="cancel-btn">Нет</button>
                                      </div>
-                                </div>
-                                <div class="modal" v-if="activateConfirm" @close="activateConfirm=false">
-                                   <p>Сотрудник " {{staff.name}} " успешно удален</p>
-                                   <button class="confirm-btns cancel-btn" @click="activateConfirm=false">ОК</button>
-                                </div>
-                            </div> 
-                </div>
+                                     <div class="modal" v-if="activateConfirm" @close="activateConfirm=false">
+                                       <p>Сотрудник " {{staff.name}} " успешно удален</p>
+                                       <button class="confirm-btns cancel-btn" @click="activateConfirm=false">ОК</button>
+                                    </div>
+                               </div>
+
             </div>
-            
+            </div>
             <div class="stats">
                 <p class="deals">сделки: 112</p>
                 <p class="exp">стаж: 3 года 2 месяца</p>
             </div>
+
             <div class="contacts">
                 <div class="contact-data">
+   
                     <h5>Контакты:</h5>
                     <p><img src="@/assets/tel.svg" class="phone-icon"/>{{staff.phone}}</p>
                     <p><img src="@/assets/email.svg" class="email-icon"/>{{staff.email}}</p>
@@ -76,23 +77,19 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-//import Modal from './Modal';
-
 
 export default {
   name: 'stafflist', 
         components:{
-    //    Modal
     },
 
     data() {
 return {
-    search: '',
-   // showModal: false,
+    //search: '',
     activateConfirm: false,
-    activeIndex: undefined,
-   // staffDropArrayModal: [{modalShow: false}]
-        isModalVisible: false,
+    selectedId:'',
+    selectedIdConfirm:'',
+    isModalVisible: false
     }
 },
   computed: { 
@@ -110,14 +107,13 @@ return {
 
   methods: { 
    ...mapActions(['fetchStaff', 'deleteStaff']),
-         showModal() {
-
-        this.isModalVisible = true;
+         showModal(id) {
+        this.selectedId = id;
+        this.selectedIdConfirm = id;
       },
-            closeModal() {
-        this.isModalVisible = false;
+      closeModal() {
+        this.selectedId='';
       }
-
   },
 
   created() {
@@ -347,7 +343,8 @@ router-link {
     height: 124px;
     z-index: 10;
     background: #353541;
-    margin-right: 150px;
+    margin-left: -300px;
+    top: 100px;
 }
 .modal p {
 width: 80%;
