@@ -40,7 +40,7 @@
                                         <button @click="(deleteStaff(staff.id)), (closeModal), (activateConfirm=true)" class="delete-btn-modal">Да</button>
                                         <button @click="closeModal" class="cancel-btn">Нет</button>
                                      </div>
-                                     <div class="modal" v-if="activateConfirm" @close="activateConfirm=false">
+                                     <div class="modal" v-if="activateConfirm=true" @close="activateConfirm=false">
                                        <p>Сотрудник " {{staff.name}} " успешно удален</p>
                                        <button class="confirm-btns cancel-btn" @click="activateConfirm=false">ОК</button>
                                     </div>
@@ -159,7 +159,7 @@ p {
   font-size: 16px;
   height: 49px;
   color: #C4C4C4;
-  padding: 16px;
+  padding: 12px;
   border: none;
   cursor: pointer;
   width: 200px;
@@ -470,6 +470,86 @@ font-size: 14px;
 line-height: 18px;
 color: #353541
 }
+
+@media screen and (max-width: 1062px) {
+.staff-nav {
+    height: 40px;
+}
+.dropbtn {
+  font-size: 14px;
+  height: 40px;
+  padding: 10px;
+  width: 150px;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+  min-width: 150px;
+}
+#options-content {
+  display: none;
+  position: absolute;
+  background-color: #353541;
+  min-width: 150px;
+  z-index: 1;
+  margin-left: 26px;
+  margin-top: -45px;
+}
+/* Links inside the dropdown */
+.dropdown-content a {
+  font-size: 14px;
+  line-height: 20px;
+  color: #C4C4C4;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-btn {
+width: 150px;
+height: 40px;
+}
+
+.search-btn {
+    font-size: 14px;
+    width: 90px;
+    height:40px;
+}
+
+.action-btns {
+    margin-right: 30px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+.staff-add-btn {
+    height: 40px;
+    font-size: 12px;
+    line-height: 20px;
+    padding-left: 15px;
+    padding-right: 15px;
+    width: 120px;
+}
+
+.staff-add-btn img {
+    margin-right: 8px;
+    width:10px;
+    height: auto;
+}
+
+.exit-btn {
+    background: #353541;
+    width: 93+0px;
+    height: 40px;
+    border: none;
+    margin-left: 15px;
+    cursor: pointer;
+}
+input {
+    height: 40px;
+}
+}
+
 @media screen and (max-width: 1300px) {
     
 .staff-nav {
@@ -507,120 +587,6 @@ input {
     margin-left: 30px;
 }
 }
-
-@media screen and (max-width: 1110px) {
-.staff-nav {
-    justify-content: flex-start;
-    height: 49px;
-    width: 100%;
-}
-.dropbtn {
-  width: 140px;
-}
-/* Dropdown Content (Hidden by Default) */
-.dropdown-content {
-  min-width: 140px;
-}
-/* Links inside the dropdown */
-.dropdown-btn {
-width: 130px;
-}
-input {
-    margin-left: 30px;
-    width: 170px;
-    padding-left: 20px;
-}
-.search-btn {
-    margin-left: 10px;
-    width: 60px;
-}
-.staff-add-btn {
-    padding-left: 20px;
-    padding-right: 20px;
-    margin-left: 30px;
-}
-.exit-btn {
-    width: 50px;
-    margin-left: 30px;
-}
-}
-
-@media screen and (max-width: 1005px) {
-.staff-nav {
-    justify-content: flex-start;
-    height: 40px;
-    width: 100%;
-}
-.dropbtn {
-  width: 120;
-  font-size: 12px;
-}
-/* Dropdown Content (Hidden by Default) */
-.dropdown-content {
-  min-width: 140px;
-  font-size: 12px;
-}
-/* Links inside the dropdown */
-.dropdown-btn {
-width: 120px;
-}
-input {
-    margin-left: 30px;
-    width: 190px;
-    padding-left: 20px;
-}
-.search-btn {
-    margin-left: 10px;
-    width: 60px;
-    font-size: 12px;
-}
-.staff-add-btn {
-    padding-left: 20px;
-    padding-right: 20px;
-    margin-left: 30px;
-    font-size: 12px;
-    width: 120px;
-}
-
-.staff-add-btn img {
-width: 13px;
-height: auto;
-margin-right: 3px;
-}
-
-.exit-btn {
-    width: 50px;
-    margin-left: 30px;
-}
-.action-btns {
-    margin-right: 0;
-    display: flex;
-    justify-content: flex-end;
-}
-.staff-nav {
-    display: flex;
-    justify-content: space-between;
-}
-}
-
-@media screen and (max-width: 985px) {
-.staff-card {
-width: 310px;
-height: auto;
-margin: 30px 30px 30px 0;
-display: flex;
-flex-direction: column;
-}
-.staff-cards-container {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    flex-wrap: wrap;
-}
-
-}
-
 @media screen and (min-width: 1515px) {
 .staff-nav {
     justify-content: space-between;
