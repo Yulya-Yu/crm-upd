@@ -7,7 +7,7 @@
           <div class="category-container">
               <div class="category-card" v-for="menuCat in menuAll" :key="menuCat.id">
                   <button class="category-delete" @click="showModal(menuCat.id)"><img src="@/assets/menu_del.svg"></button>
-
+                    <transition name="slide-fade">
                   <div class="modal" v-show="selectedId == menuCat.id">
                       <p>Вы уверены что хотите удалить категорию " {{menuCat.name}} " со всеми блюдами ?</p>
                       <div class="confirm-btns">
@@ -16,29 +16,34 @@
                       </div>
                       <div class="modal" v-if="activateConfirm==true" @close="activateConfirm=false">
                           <p>Категория " {{menuCat.name}} " успешно удалена</p>
-                          <button class="confirm-btns cancel-btn" @click="activateConfirm=false, selectedId=''">ОК</button>
+                          <button class="confirm-btns cancel-btn" @click="closeOkModal">ОК</button>
                       </div>
                   </div>
-
+                    </transition>
                   <h1 class="category-name">{{menuCat.title}}</h1>
                   <router-link v-bind:to="{name:'menucategory', params: {cat_id: menuCat.id}}"><button class="items-number" @click="goToCategory(menuCat.id)">{{menuCat.id}} позиций</button></router-link>
               </div>
           </div>
-                            
-                            <div class="add-category-modal" v-if="addCategoryModal == true" >
-                                <div class="mask">
-                                    <div class="category-modal-container">
-                                     <div class="addModal">
-                                     <label for="newCategory">Добавить Категорию</label>
-                                     <input type="text" id="newCategory">
-                                     <div class="confirm-btns">
-                                        <button @click="closeCategoryModal" class="add-category-success">Добавить</button>
-                                     </div>
-                                        </div>
-                                    </div>
-                                </div>    
-                            </div>
-
+        <div class="add-category-modal" v-if="addCategoryModal == true" >
+            <div class="mask">
+                <div class="category-modal-container">
+                    <div class="addModal">
+                        <h1>Добавить категорию</h1>
+                        <div class="form">
+                            <input id="menus" v-on:click="menuError=false" v-model="categoryName"
+                                   v-bind:class="{errorcolor: menuError, errorcolor : nullInput}" required/>
+                            <label v-bind:class="{errorbordercolor: menuError,errorbordercolor: nullInput}" for="menus" class="label-name">
+                                <span class="content-name" >Наименовние категории</span>
+                                <transition name="slide-fade">
+                                    <span v-if="menuError == true" class="content-name content-name-error">Обязательное поле</span>
+                                </transition>
+                            </label>
+                        </div>
+                        <button v-on:click="catNameValid">Добавить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -52,19 +57,39 @@ return {
     activateConfirm: false,
     selectedId:'',
     selectedIdConfirm:'',
-    addCategoryModal: false
+    addCategoryModal: false,
+    menuError: false,
+    nullInput: false,
+    categoryName: null,
     }
 },
   computed: { 
       ...mapGetters(['menuAll']),
+      isMenuNameValid () {
+          let emailCodeRegex = new RegExp(/^([А-ЯЁ]{1}[а-яё]{1,49})$/)
+          let isFathernameValid = emailCodeRegex.test(this.forming[2].name)
+          return isFathernameValid
+      },
 },
   methods: { 
    ...mapActions(['fetchMenu', 'deleteMenuItems']),
       showModal(id) {
-        this.selectedId = id;
+          this.selectedId = id;
       },
       closeModal() {
-        this.selectedId='';
+          this.selectedId='';
+          this.activateConfirm=false
+      },
+      closeOkModal() {
+          this.selectedId='';
+          this.activateConfirm=false;
+      },
+      catNameValid() {
+          if(this.categoryName === null || this.categoryName === undefined || this.categoryName === ''){
+              this.menuError = true
+          }
+          // eslint-disable-next-line no-console
+          console.log(this.menuError)
       },
       addCategory() {
       },
@@ -150,9 +175,9 @@ router-link {
     justify-content: center;
     flex-direction: column;
     align-items: center;
-    width: 230px;
+    width: 100%;
     position: absolute;
-    height: 120px;
+    height: 100%;
     z-index: 10;
     background: #353541;
 
@@ -217,15 +242,11 @@ margin: 10px 10px 0 auto;
     font-size: 24px;
     color: #E1E1E1;
 }
-
 h1 {
 font-size: 32px;
 line-height: 42px;
 color: #353541;
 }
-
-
-
 .mask {
   position: fixed;
   z-index: 9998;
@@ -248,7 +269,8 @@ height: 100vh;
 .addModal {
     width: 500px;
     height: 300px;
-    background: #353541;
+    background: white;
+    border: 3px solid  #353541;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -256,25 +278,106 @@ height: 100vh;
     text-align: center;
     font-size: 18px;
     line-height: 21px;
-    color: #E1E1E1;
+    color: #353541;
 }
+.addModal h1{
+    padding-bottom: 50px;
+}
+.addModal button{
+    margin-left: auto;
+    margin-right: auto;
+    background: #18181E;
+    width: 120px;
+    height: 40px;
 
-input {
-    width: 60%;
-    border: none;
-    margin: 20px auto;
+    color: #F0F2F4;
+    font-size: 22px;
+    line-height: 28px;
     outline: none;
-    padding: 10px;
-    background: #F0F2F4;
-}
-
-.add-category-success {
     border: none;
-    width: 100px;
-    height: 50px;
-    background-color: #C4C4C4; 
-    color:#353541;
-    font-size: 16px;
+    margin-top: 50px;
+    transition: 0.3s;
+    border: 1px solid #18181E;
 }
-
+.addModal button:hover {
+    background-color: #F0F2F4;
+    color: #18181E;
+    border: 1px solid #18181E;
+}
+.form{
+    position: relative;
+    height: 50px;
+}
+.form input{
+    width: 65%;
+    height: 100%;
+    border: none;
+    padding-top: 20px;
+    padding-bottom: 10px;
+    outline: none;
+}
+.form input[placeholder]{
+    font-size: 16px;
+    line-height: 20px;
+}
+.form label{
+    position: absolute;
+    border-bottom: 1px solid #353541;
+    bottom: 0px;
+    left: 0;
+    right: 0;
+    margin-right: auto;
+    margin-left: auto;
+    width: 65%;
+    height: 100%;
+    color: #353541;
+    pointer-events: none;
+    font-size: 16px;
+    line-height: 20px;
+}
+.content-name{
+    position: absolute;
+    bottom: 5px;
+    left: 0px;
+    transition: all 0.3s ease;
+}
+.form input:focus + .label-name .content-name, .form input:valid + .label-name .content-name{
+    transform: translateY(-150%);
+}
+.form input:hover + .label-name .content-name, .form input:valid + .label-name .content-name{
+    transform: translateY(-150%);
+}
+.succescolor{
+    color: #353541;
+}
+.errorcolor{
+    color: #FF7373;
+}
+.succesbordercolor{
+    border-bottom: 1px solid #353541;
+}
+.errorbordercolor{
+    border-bottom: 1px solid #FF7373;
+}
+.content-name-error{
+    color: #FF7373;
+    right: 0%;
+    left: auto;
+    top: 24px;
+}
+.content-auth-error{
+    top: 50px;
+    color: #FF7373;
+}
+.slide-fade-enter-active {
+    transition: all .3s ease;
+}
+.slide-fade-leave-active {
+    transition: all .3s ease;
+}
+.slide-fade-enter, .slide-fade-leave-to
+    /* .slide-fade-leave-active до версии 2.1.8 */ {
+    transform: translateX(10px);
+    opacity: 0;
+}
 </style>

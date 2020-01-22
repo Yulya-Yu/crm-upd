@@ -15,7 +15,9 @@
                            id="login" autocomplete="off" required maxlength="16" />
                     <label id="firstlabel" v-bind:class="{errorbordercolor: loginerror , errorbordercolor : noneuser}" for="login" class="label-name">
                         <span class="content-name" >Логин</span>
+                        <transition name="slide-fade">
                         <span v-if="loginerror == true" class="content-name content-name-error">Обязательное поле</span>
+                        </transition>
                     </label>
                 </div>
                 <div class="form" style="margin-top: 64px">
@@ -25,9 +27,15 @@
                             id="password" autocomplete="off" required />
                     <label id="secondlabel" v-bind:class="{errorbordercolor: passworderror, errorbordercolor : noneuser}" for="password" class="label-name">
                         <span class="content-name">Пароль</span>
+                        <transition name="slide-fade">
                         <span v-if="passworderror == true" class="content-name content-name-error">Обязательное поле</span>
+                        </transition>
+                        <transition name="slide-fade">
                         <span v-if="noneuser == true" class="content-name content-auth-error">Неверный логин или пароль</span>
+                        </transition>
+                        <transition name="slide-fade">
                         <span v-if="noneserver == true" class="content-name content-auth-error">Ошибка сервера</span>
+                        </transition>
                     </label>
                 </div>
                 <button v-on:click="login()">Войти</button>
@@ -40,10 +48,6 @@
     export default {
         data() {
             return{
-                usertest: {
-                    username: 'user1',
-                    password: 'pass1'
-                },
                 auth: {
                     login: '',
                     password: ''
@@ -112,6 +116,8 @@
                             }
                         })
                 }
+                // eslint-disable-next-line no-console
+                console.log(this.loginerror)
             },
             clearLoginError: function () {
                 document.getElementById('firstlabel').style.borderBottomColor = '#F0F2F4'
@@ -245,6 +251,17 @@
         background-color: #18181E;
         color: #F0F2F4;
     }
+.slide-fade-enter-active {
+    transition: all .3s ease;
+}
+.slide-fade-leave-active {
+    transition: all .3s ease;
+}
+.slide-fade-enter, .slide-fade-leave-to
+    /* .slide-fade-leave-active до версии 2.1.8 */ {
+    transform: translateX(10px);
+    opacity: 0;
+}
 @media (max-width: 992px){
     .col-with-img{
         display: none;
