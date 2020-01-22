@@ -24,32 +24,30 @@
         <div class="staff-card" v-for="staff in allStaff" :key="staff.id" :staff="staff">
             <div class="header" >
                 <div class="employee" >
-                    <h5>{{staff.name}}</h5>
-                    <p>{{staff.company.name}}</p>
-                </div>    
+                    <h5>{{staff.surname}} {{staff.name}} {{staff.fathername}}</h5>
+                    <p>{{staff.role}}</p>
+                </div>
             <div class="options-container">
                    <button class="options-btn"><img src="@/assets/dots.svg" /></button>
                    <div id="options-content">
-                     <router-link to="/staffedit"><button @click="goToEdit()"><img src="@/assets/edit.svg" class="options-icon"> Редактировать</button></router-link>
+                       <router-link v-bind:to="{name:'staffedit', params: {staff_id: staff.id}}"><button @click="goToEdit(staff.id)"><img src="@/assets/edit.svg" class="options-icon"> Редактировать</button></router-link>
                      <button class="delete-btn" @click="showModal(staff.id)"><img src="@/assets/del.svg" class="options-icon">Уволить</button> 
-                   </div> 
-
+                   </div>
                                 <div class="modal" v-show="selectedId == staff.id">
-                                     <p>Вы уверены что хотите уволить сторудника " {{staff.name}} " ?</p>
+                                     <p>Вы уверены что хотите уволить сторудника " {{staff.surname}} {{staff.name}} {{staff.fathername}} " ?</p>
                                      <div class="confirm-btns">
                                         <button @click="(deleteStaff(staff.id)), (closeModal), (activateConfirm=true)" class="delete-btn-modal">Да</button>
                                         <button @click="closeModal" class="cancel-btn">Нет</button>
                                      </div>
-                                     <div class="modal" v-if="activateConfirm=true" @close="activateConfirm=false">
-                                       <p>Сотрудник " {{staff.name}} " успешно удален</p>
+                                     <div class="modal" v-if="activateConfirm" @close="activateConfirm=false">
+                                       <p>Сотрудник " {{staff.surname}} {{staff.name}} {{staff.fathername}} " успешно удален</p>
                                        <button class="confirm-btns cancel-btn" @click="activateConfirm=false">ОК</button>
                                     </div>
                                </div>
-
             </div>
             </div>
             <div class="stats">
-                <p class="deals">сделки: 112</p>
+                <p class="deals">сделки: {{staff.deals}}</p>
                 <p class="exp">стаж: 3 года 2 месяца</p>
             </div>
 
@@ -57,15 +55,15 @@
                 <div class="contact-data">
    
                     <h5>Контакты:</h5>
-                    <p><img src="@/assets/tel.svg" class="phone-icon"/>{{staff.phone}}</p>
+                    <p><img src="@/assets/tel.svg" class="phone-icon"/>+7{{staff.telephone}}</p>
                     <p><img src="@/assets/email.svg" class="email-icon"/>{{staff.email}}</p>
                 </div>
                 <div class="passport">
                     <h5>Паспорт</h5>
-                    <p>Дата Рождения:</p>
-                    <p>Серия и Номер паспорта:</p>
-                    <p>Дата выдачи:</p>
-                    <p>Кем выдан:</p>
+                    <p>Дата Рождения: {{staff.birth_date}}</p>
+                    <p>Серия и Номер паспорта: {{staff.passport_series}} {{staff.passport_number}}</p>
+                    <p>Дата выдачи: {{staff.date_of_issue_of_passport}}</p>
+                    <p>Кем выдан: {{staff.passport_issued_by}}</p>
                 </div>
             </div>
         </div>
@@ -146,6 +144,7 @@ p {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    background: #E1E1E1;
 }
 .staff-nav {
     display: flex;
@@ -159,7 +158,7 @@ p {
   font-size: 16px;
   height: 49px;
   color: #C4C4C4;
-  padding: 12px;
+  padding: 16px;
   border: none;
   cursor: pointer;
   width: 200px;
@@ -470,165 +469,164 @@ font-size: 14px;
 line-height: 18px;
 color: #353541
 }
-
 @media screen and (max-width: 1062px) {
-.staff-nav {
-    height: 40px;
-}
-.dropbtn {
-  font-size: 14px;
-  height: 40px;
-  padding: 10px;
-  width: 150px;
-}
+    .staff-nav {
+        height: 40px;
+    }
+    .dropbtn {
+        font-size: 14px;
+        height: 40px;
+        padding: 10px;
+        width: 150px;
+    }
 
-/* Dropdown Content (Hidden by Default) */
-.dropdown-content {
-  min-width: 150px;
-}
-#options-content {
-  display: none;
-  position: absolute;
-  background-color: #353541;
-  min-width: 150px;
-  z-index: 1;
-  margin-left: 26px;
-  margin-top: -45px;
-}
-/* Links inside the dropdown */
-.dropdown-content a {
-  font-size: 14px;
-  line-height: 20px;
-  color: #C4C4C4;
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
-}
+    /* Dropdown Content (Hidden by Default) */
+    .dropdown-content {
+        min-width: 150px;
+    }
+    #options-content {
+        display: none;
+        position: absolute;
+        background-color: #353541;
+        min-width: 150px;
+        z-index: 1;
+        margin-left: 26px;
+        margin-top: -45px;
+    }
+    /* Links inside the dropdown */
+    .dropdown-content a {
+        font-size: 14px;
+        line-height: 20px;
+        color: #C4C4C4;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+    }
 
-.dropdown-btn {
-width: 150px;
-height: 40px;
-}
+    .dropdown-btn {
+        width: 150px;
+        height: 40px;
+    }
 
-.search-btn {
-    font-size: 14px;
-    width: 90px;
-    height:40px;
-}
+    .search-btn {
+        font-size: 14px;
+        width: 90px;
+        height:40px;
+    }
 
-.action-btns {
-    margin-right: 30px;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-}
-.staff-add-btn {
-    height: 40px;
-    font-size: 12px;
-    line-height: 20px;
-    padding-left: 15px;
-    padding-right: 15px;
-    width: 120px;
-}
+    .action-btns {
+        margin-right: 30px;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+    }
+    .staff-add-btn {
+        height: 40px;
+        font-size: 12px;
+        line-height: 20px;
+        padding-left: 15px;
+        padding-right: 15px;
+        width: 120px;
+    }
 
-.staff-add-btn img {
-    margin-right: 8px;
-    width:10px;
-    height: auto;
-}
+    .staff-add-btn img {
+        margin-right: 8px;
+        width:10px;
+        height: auto;
+    }
 
-.exit-btn {
-    background: #353541;
-    width: 93+0px;
-    height: 40px;
-    border: none;
-    margin-left: 15px;
-    cursor: pointer;
-}
-input {
-    height: 40px;
-}
+    .exit-btn {
+        background: #353541;
+        width: 93+0px;
+        height: 40px;
+        border: none;
+        margin-left: 15px;
+        cursor: pointer;
+    }
+    input {
+        height: 40px;
+    }
 }
 
 @media screen and (max-width: 1300px) {
-    
-.staff-nav {
-    justify-content: flex-start;
-    height: 49px;
-    width: 100%;
-}
-.dropbtn {
-  width: 190px;
-}
-/* Dropdown Content (Hidden by Default) */
-.dropdown-content {
-  min-width: 190px;
-}
-/* Links inside the dropdown */
-.dropdown-btn {
-width: 130px;
-}
-input {
-    margin-left: 30px;
-    width: 180px;
-    padding-left: 30px;
-}
-.search-btn {
-    margin-left: 10px;
-    width: 70px;
-}
-.staff-add-btn {
-    padding-left: 20px;
-    padding-right: 20px;
-    margin-left: 30px;
-}
-.exit-btn {
-    width: 50px;
-    margin-left: 30px;
-}
+
+    .staff-nav {
+        justify-content: flex-start;
+        height: 49px;
+        width: 100%;
+    }
+    .dropbtn {
+        width: 190px;
+    }
+    /* Dropdown Content (Hidden by Default) */
+    .dropdown-content {
+        min-width: 190px;
+    }
+    /* Links inside the dropdown */
+    .dropdown-btn {
+        width: 130px;
+    }
+    input {
+        margin-left: 30px;
+        width: 180px;
+        padding-left: 30px;
+    }
+    .search-btn {
+        margin-left: 10px;
+        width: 70px;
+    }
+    .staff-add-btn {
+        padding-left: 20px;
+        padding-right: 20px;
+        margin-left: 30px;
+    }
+    .exit-btn {
+        width: 50px;
+        margin-left: 30px;
+    }
 }
 @media screen and (min-width: 1515px) {
-.staff-nav {
-    justify-content: space-between;
-    height: 49px;
-    width: 100%;
-}
+    .staff-nav {
+        justify-content: space-between;
+        height: 49px;
+        width: 100%;
+    }
 
-.dropbtn {
-  width: 250px;
-}
-/* Dropdown Content (Hidden by Default) */
-.dropdown-content {
-  min-width: 190px;
-}
-/* Links inside the dropdown */
-.dropdown-btn {
-width: 314px;
-}
-input {
-    margin-left: 30px;
-    width: 500px;
-    padding-left: 30px;
-    height: 49px;
-}
-.search-btn {
-    margin-left: 10px;
-    width: 105px;
-}
-.staff-add-btn {
-    padding-left: 20px;
-    padding-right: 20px;
-    margin-left: 30px;
-    width: 248px;
-}
-.exit-btn {
-    width: 93px;
-    margin-left: 30px;
-}
+    .dropbtn {
+        width: 250px;
+    }
+    /* Dropdown Content (Hidden by Default) */
+    .dropdown-content {
+        min-width: 190px;
+    }
+    /* Links inside the dropdown */
+    .dropdown-btn {
+        width: 314px;
+    }
+    input {
+        margin-left: 30px;
+        width: 500px;
+        padding-left: 30px;
+        height: 49px;
+    }
+    .search-btn {
+        margin-left: 10px;
+        width: 105px;
+    }
+    .staff-add-btn {
+        padding-left: 20px;
+        padding-right: 20px;
+        margin-left: 30px;
+        width: 248px;
+    }
+    .exit-btn {
+        width: 93px;
+        margin-left: 30px;
+    }
 }
 @media screen and (min-width: 1800px) {
-input {
-    max-width: 600px;
-}
+    input {
+        max-width: 600px;
+    }
 }
 </style>

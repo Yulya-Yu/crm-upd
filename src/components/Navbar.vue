@@ -9,9 +9,9 @@
           <router-link to="/clients"><img src="@/assets/klient.svg" />Клиенты</router-link>
           <router-link to="/stafflist"><img src="@/assets/sotrudniki.svg" />Сотрудники</router-link>
           <router-link to="/report"><img src="@/assets/otchet.svg" />Отчет</router-link>
+            <router-link to="/menu"><img src="@/assets/menu.svg" />Меню</router-link>
         </div>
       </div>
-
     </template>
 
     <script>

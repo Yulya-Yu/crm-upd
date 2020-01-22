@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-//import Home from '../views/Home.vue'
 import StaffList from '@/components/staff/StaffList.vue'
 import StaffRegister from '@/components/staff/StaffRegister.vue'
 import StaffEdit from '../components/staff/StaffEdit.vue'
@@ -10,7 +9,8 @@ import Report from '../components/Report.vue'
 import Requests from '../components/Requests.vue'
 import DeletedStaff from '../components/staff/DeletedStaff.vue'
 import Login from '../components/Login.vue'
-
+import Menu from '../components/Menu.vue'
+import MenuCategory from '../components/MenuCategory.vue'
 Vue.use(VueRouter)
 
 const routes = [{
@@ -30,9 +30,9 @@ const routes = [{
         component: StaffRegister
     },
     {
-        path: '/staffedit',
+        path: '/staffedit/:staff_id',
         name: 'staffedit',
-        component: StaffEdit
+        component: StaffEdit,
     },
     {
         path: '/clients',
@@ -63,7 +63,18 @@ const routes = [{
         path: '/login',
         name: 'login',
         component: Login
-    }
+    },
+    {
+        path: '/menu',
+        name: 'menu',
+        component: Menu,
+
+    },
+    {
+        path: '/menucategory/:cat_id',
+        name: 'menucategory',
+        component: MenuCategory,
+    },
 ]
 
 const router = new VueRouter({

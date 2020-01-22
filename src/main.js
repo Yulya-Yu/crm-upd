@@ -11,6 +11,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 import DatePicker from "vue2-datepicker";
 Vue.use(DatePicker)
 Vue.use(BootstrapVue)
+import axios from 'axios';
 
 Vue.config.productionTip = false
 
@@ -19,6 +20,7 @@ Vue.use(VueInputMask)
 Vue.component('Login', Login);
 Vue.component('StaffRegister', StaffRegister);
 Vue.component('StaffEdit', StaffEdit)
+window.axios = axios
 
 new Vue({
     router,

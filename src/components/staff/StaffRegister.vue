@@ -6,9 +6,9 @@
             <a>Роль:</a>
             <form action="" name="role">
                 <select name="whitch" v-on:change="whichRole()">
-                    <option selected value="manager">Менеджер</option>
-                    <option value="director">Директор</option>
-                    <option value="admin">Администратор</option>
+                    <option selected value="Менеджер">Менеджер</option>
+                    <option value="Директор">Директор</option>
+                    <option value="Администратор">Администратор</option>
                 </select>
             </form>
         </div>
@@ -42,7 +42,7 @@
                 <!--    Date        onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'"   -->
                 <input v-if="forming[index][0].type === 'date'"
                        onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'"
-                       min="1920-01-01"
+                       min="01.01.1920"
                        v-on:mousedown="clearError(index)" v-on:focus="clearError(index)" v-bind:name="forming[index][0].fieldName"
                        v-bind:class="{errorcolor: forming[index][0].borderError, succescolor: !forming[index][0].borderError}"
                        type="text" v-model="title.name"
@@ -103,13 +103,14 @@
             </div>
         </div>
     </div>
-    <button v-on:click="validationInput">
-        Зарегестрироваться
-    </button>
+        <button v-on:click="validationInput">
+            Зарегестрироваться
+        </button>
 </div>
 </template>
 
 <script>
+    import axios from 'axios';
     export default {
         data(){
             return{
@@ -234,7 +235,7 @@
                 ],
                 roles: ['Администратор','Менеджер','Директор'],
                 counter: 0,
-                sotr: 'manager',
+                sotr: 'Менеджер',
                 inputMaskDigits2: {
                     alias: 'decimal',
                     integerDigits: 8,
@@ -246,16 +247,16 @@
                     surname: null,
                     name: null,
                     fathername: null,
-                    phone: null,
+                    telephone: null,
                     email: null,
-                    birthday: null,
-                    startworkdate: null,
-                    passportseria: null,
-                    passportnumber: null,
-                    passportwhen: null,
-                    passportwho: null,
+                    birth_date: null,
+                    date_of_employment: null,
+                    passport_series: null,
+                    passport_number: null,
+                    date_of_issue_of_passport: null,
+                    passport_issued_by: null,
                     login: null,
-                    password: null,
+                    pass: null,
                     role: null
                 }
             }
@@ -283,6 +284,7 @@
                 return isPhoneValid
             },
             isEmailValid () {
+                // eslint-disable-next-line no-useless-escape
                 let emailCodeRegex = new RegExp(/^((([0-9A-Za-z]{1}[-0-9A-z\.]{1,40}[0-9A-Za-z]{1})|([0-9А-Яа-я]{1}[-0-9А-я\.]{1,40}[0-9А-Яа-я]{1}))@([-0-9A-Za-z]{1,20}\.){1,2}[-A-Za-z]{2,4})$/)
                 let isEmailValid = emailCodeRegex.test(this.forming[4].name)
                 return isEmailValid
@@ -320,16 +322,16 @@
                     surname: null,
                     name: null,
                     fathername: null,
-                    phone: null,
+                    telephone: null,
                     email: null,
-                    birthday: null,
-                    startworkdate: null,
-                    passportseria: null,
-                    passportnumber: null,
-                    passportwhen: null,
-                    passportwho: null,
+                    birth_date: null,
+                    date_of_employment: null,
+                    passport_series: null,
+                    passport_number: null,
+                    date_of_issue_of_passport: null,
+                    passport_issued_by: null,
                     login: null,
-                    password: null,
+                    pass: null,
                 }
                 this.counter = 0
                 for(let i = 0; i< this.forming.length; i++){
@@ -380,7 +382,16 @@
                             }
                             else{
                                 this.counter++
-                                this.user.phone = this.forming[i].name
+                                if(this.forming[i].name != null){
+                                    // eslint-disable-next-line no-useless-escape
+                                    this.user.telephone = this.forming[i].name
+                                        .replace(/ /g, "" )
+                                        .replace(/\)/g, "")
+                                        .replace(/\(/g, "")
+                                        .replace(/\+/g, "")
+                                        .replace(/-/g, "" )
+                                        .replace(/7/g, "" )
+                                }
                             }
                         }
                         if (this.forming[i][0].fieldName === 'email'){
@@ -400,7 +411,7 @@
                             }
                             else{
                                 this.counter++
-                                this.user.passportseria = this.forming[i].name
+                                this.user.passport_series = this.forming[i].name
                             }
                         }
                         if (this.forming[i][0].fieldName === 'passportnumber'){
@@ -410,7 +421,7 @@
                             }
                             else{
                                 this.counter++
-                                this.user.passportnumber = this.forming[i].name
+                                this.user.passport_number = this.forming[i].name
                             }
                         }
                         if (this.forming[i][0].fieldName === 'passportwho'){
@@ -420,7 +431,7 @@
                             }
                             else{
                                 this.counter++
-                                this.user.passportwho = this.forming[i].name
+                                this.user.passport_issued_by = this.forming[i].name
                             }
                         }
                         if (this.forming[i][0].fieldName === 'login'){
@@ -456,7 +467,7 @@
                             }
                             else{
                                 this.counter++
-                                this.user.password = this.forming[i].name
+                                this.user.pass = this.forming[i].name
                             }
                         }
                         if (this.forming[i][0].type === 'date'){
@@ -469,9 +480,18 @@
                             }
                             else{
                                 this.counter++
-                                this.user.passportwhen = this.forming[9].name
-                                this.user.birthday = this.forming[5].name
-                                this.user.startworkdate = this.forming[6].name
+                                if(this.forming[9].name != null){
+                                    this.user.date_of_issue_of_passport = this.forming[9].name.replace( /-/g, "." )
+                                        .replace(/(\w+).(\w+).(\w+)/i, '$3.$2.$1')
+                                }
+                                if(this.forming[5].name != null){
+                                    this.user.birth_date = this.forming[5].name.replace( /-/g, "." )
+                                        .replace(/(\w+).(\w+).(\w+)/i, '$3.$2.$1')
+                                }
+                                if(this.forming[6].name != null){
+                                    this.user.date_of_employment = this.forming[6].name.replace( /-/g, "." )
+                                        .replace(/(\w+).(\w+).(\w+)/i, '$3.$2.$1')
+                                }
                             }
                         }
                     }
@@ -485,7 +505,39 @@
             },
             regComplited (){
                 if (this.counter === 13){
-                    alert('Успешная регистрация')
+                    axios({
+                        method: 'post',
+                        auth: {
+                            username: 'admin',
+                            password: 'dj5ghg67',
+                        },
+                        data: {
+                            surname: this.user.surname,
+                            name: this.user.name,
+                            fathername: this.user.fathername,
+                            telephone: this.user.telephone,
+                            email: this.user.email,
+                            birth_date: this.user.birth_date,
+                            date_of_employment: this.user.date_of_employment,
+                            passport_series: this.user.passport_series,
+                            passport_number: this.user.passport_number,
+                            date_of_issue_of_passport: this.user.date_of_issue_of_passport,
+                            passport_issued_by: this.user.passport_issued_by,
+                            login: this.user.login,
+                            pass: this.user.pass,
+                            role: this.sotr,
+                        },
+                        url: 'http://api.catering.student.smartworld.team:2280/employee/create/'
+                    })
+                        .then((response) => {
+                            // eslint-disable-next-line no-console
+                            console.log(response)
+                            this.$router.push({name:'stafflist'});
+                        })
+                        .catch((error) => {
+                            // eslint-disable-next-line no-console
+                            console.log(error.response.status)
+                        })
                     this.counter = 0
                 }
             },
@@ -494,20 +546,19 @@
                 this.forming[index][0].valid = false
                 this.forming[index][0].errorIndex = 'none'
             },
+            // починить!
             whichRole(){
                 let bsh = document.role.whitch
                 let bshed = bsh.options[bsh.selectedIndex].text
                 if (bshed === 'Администратор'){
-                    this.sotr = 'admin'
+                    this.sotr = 'Администратор'
                 }
                 else if (bshed === 'Директор'){
-                    this.sotr = 'director'
+                    this.sotr = 'Директор'
                 }
                 else if (bshed === 'Менеджер'){
-                    this.sotr = 'manager'
+                    this.sotr = 'Менеджер'
                 }
-                // eslint-disable-next-line no-console
-                console.log(this.sotr)
             }
         },
     }

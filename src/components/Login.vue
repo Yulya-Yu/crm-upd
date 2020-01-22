@@ -27,6 +27,7 @@
                         <span class="content-name">Пароль</span>
                         <span v-if="passworderror == true" class="content-name content-name-error">Обязательное поле</span>
                         <span v-if="noneuser == true" class="content-name content-auth-error">Неверный логин или пароль</span>
+                        <span v-if="noneserver == true" class="content-name content-auth-error">Ошибка сервера</span>
                     </label>
                 </div>
                 <button v-on:click="login()">Войти</button>
@@ -34,8 +35,8 @@
         </div>
     </div>
 </template>
-
 <script>
+    import axios from 'axios';
     export default {
         data() {
             return{
@@ -50,10 +51,14 @@
                 loginerror: false,
                 passworderror: false,
                 noneuser: false,
+                noneserver: false,
+
             }
         },
         methods: {
             login: function () {
+                this.noneuser = false
+                this.noneserver = false
                 if ((this.auth.login === null || this.auth.login === '') && (this.auth.password === null || this.auth.password === '')){
                     this.loginerror = true
                     this.passworderror = true
@@ -68,15 +73,44 @@
                     this.passworderror = true
                     document.getElementById('secondlabel').style.borderBottomColor = '#FF7373'
                 }
-                else if(this.auth.login !== this.usertest.username || this.auth.password !== this.usertest.password){
-                    document.getElementById('firstlabel').style.borderBottomColor = '#FF7373'
-                    document.getElementById('secondlabel').style.borderBottomColor = '#FF7373'
-                    document.getElementById('login').style.color = '#FF7373'
-                    document.getElementById('password').style.color = '#FF7373'
-                    this.noneuser = true
-                }
                 else{
-                    alert('Успешная авторизация')
+                    axios({
+                        method: 'post',
+                        auth: {
+                            username: this.auth.login,
+                            password: this.auth.password,
+                        },
+                        url: 'http://api.catering.student.smartworld.team:2280/employee/'
+                    })
+                        .then((response) => {
+                            // eslint-disable-next-line no-console
+                            console.log(response.data.items)
+                            this.$router.push('/menu')
+                        })
+                        .catch((error) => {
+                            // eslint-disable-next-line no-console
+                            console.log(error.response)
+                            if (error.response.status === 401){
+                                document.getElementById('firstlabel').style.borderBottomColor = '#FF7373'
+                                document.getElementById('secondlabel').style.borderBottomColor = '#FF7373'
+                                document.getElementById('login').style.color = '#FF7373'
+                                document.getElementById('password').style.color = '#FF7373'
+                                this.noneuser = true
+                            }
+                            else if(error.response.status === 500){
+                                if(error.response.data.message != 'У Вас нет прав для доступа к данной странице'){
+                                    document.getElementById('firstlabel').style.borderBottomColor = '#FF7373'
+                                    document.getElementById('secondlabel').style.borderBottomColor = '#FF7373'
+                                    document.getElementById('login').style.color = '#FF7373'
+                                    document.getElementById('password').style.color = '#FF7373'
+                                    this.noneserver = true
+                                }
+                                else if(error.response.data.message === 'У Вас нет прав для доступа к данной странице'){
+                                    this.$router.push('/menu')
+                                    alert('Успешная авторизация')
+                                }
+                            }
+                        })
                 }
             },
             clearLoginError: function () {
@@ -84,17 +118,18 @@
                 document.getElementById('login').style.color = '#F0F2F4'
                 this.loginerror = false
                 this.noneuser = false
+                this.noneserver = false
             },
             clearPasswordError: function () {
                 document.getElementById('secondlabel').style.borderBottomColor = '#F0F2F4'
                 document.getElementById('password').style.color = '#F0F2F4'
                 this.passworderror = false
                 this.noneuser = false
+                this.noneserver = false
             },
         }
     }
 </script>
-
 <style scoped>
 .form{
     width: 420px;
@@ -108,7 +143,7 @@
     padding-top: 20px;
     background-color: #353541;
     color: #F0F2F4;
-    padding-bottom: 5px;
+    padding-bottom: 7px;
     outline: none;
 }
 .form input[placeholder]{
