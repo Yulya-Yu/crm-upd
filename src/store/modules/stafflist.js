@@ -34,9 +34,19 @@ const actions = {
         commit('deleteStaff', id);
     },
     async fetchMenu({ commit }) {
-        const response = await axios.get('https://jsonplaceholder.typicode.com/todos?_limit=3');
-        commit('setMenu', response.data);
+        const response = await axios.get('http://api.catering.student.smartworld.team:2280/category/',
+            {auth:{username: 'admin', password: 'dj5ghg67'}});
+        commit('setMenu', response.data.items);
+        // eslint-disable-next-line no-console
+        console.log(response.data.items)
     },
+    // async fetchMenuCategory({ commit }) {
+    //     const response = await axios.get('http://api.catering.student.smartworld.team:2280/category/',
+    //         {auth:{username: 'admin', password: 'dj5ghg67'}});
+    //     commit('setMenu', response.data.items);
+    //     // eslint-disable-next-line no-console
+    //     console.log(response.data.items)
+    // },
 };
 
 const mutations = {

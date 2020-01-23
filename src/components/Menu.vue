@@ -20,22 +20,26 @@
                       </div>
                   </div>
                     </transition>
-                  <h1 class="category-name">{{menuCat.title}}</h1>
+                  <h1 class="category-name">{{menuCat.name}}</h1>
                   <router-link v-bind:to="{name:'menucategory', params: {cat_id: menuCat.id}}"><button class="items-number" @click="goToCategory(menuCat.id)">{{menuCat.id}} позиций</button></router-link>
               </div>
           </div>
-        <div class="add-category-modal" v-if="addCategoryModal == true" >
+        <div class="add-category-modal" v-if="addCategoryModal == true">
             <div class="mask">
                 <div class="category-modal-container">
                     <div class="addModal">
                         <h1>Добавить категорию</h1>
                         <div class="form">
-                            <input id="menus" v-on:click="menuError=false" v-model="categoryName"
+                            <input id="category" v-on:click="clearError" maxlength="50"
+                                   v-on:focus="clearError" v-model="categoryName"
                                    v-bind:class="{errorcolor: menuError, errorcolor : nullInput}" required/>
-                            <label v-bind:class="{errorbordercolor: menuError,errorbordercolor: nullInput}" for="menus" class="label-name">
+                            <label v-bind:class="{errorbordercolor: menuError,errorbordercolor: nullInput}" for="category" class="label-name">
                                 <span class="content-name" >Наименовние категории</span>
                                 <transition name="slide-fade">
-                                    <span v-if="menuError == true" class="content-name content-name-error">Обязательное поле</span>
+                                    <span v-if="menuError == 1" class="content-name content-name-error">Обязательное поле</span>
+                                </transition>
+                                <transition name="slide-fade">
+                                    <span v-if="errorStatus == 1" style="top: 54px" class="content-name content-name-error">Неправильный формат заполнения</span>
                                 </transition>
                             </label>
                         </div>
@@ -48,7 +52,8 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+    import axios from 'axios';
+    import { mapGetters, mapActions } from 'vuex';
 export default {
     name: 'menu',
 data() {
@@ -61,14 +66,15 @@ return {
     menuError: false,
     nullInput: false,
     categoryName: null,
+    errorStatus: null
     }
 },
   computed: { 
       ...mapGetters(['menuAll']),
       isMenuNameValid () {
-          let emailCodeRegex = new RegExp(/^([А-ЯЁ]{1}[а-яё]{1,49})$/)
-          let isFathernameValid = emailCodeRegex.test(this.forming[2].name)
-          return isFathernameValid
+          let emailCodeRegex = new RegExp(/^([А-ЯЁа-яё]{1}[а-яё]{1,49})$/)
+          let isMenuNameValid = emailCodeRegex.test(this.categoryName)
+          return isMenuNameValid
       },
 },
   methods: { 
@@ -88,8 +94,34 @@ return {
           if(this.categoryName === null || this.categoryName === undefined || this.categoryName === ''){
               this.menuError = true
           }
-          // eslint-disable-next-line no-console
-          console.log(this.menuError)
+          else if(this.isMenuNameValid === false){
+                this.errorStatus = 1
+          }
+          else{
+              axios({
+                  method: 'post',
+                  auth: {
+                      username: 'admin',
+                      password: 'dj5ghg67',
+                  },
+                  data: {
+                      name: this.categoryName
+                  },
+                  url: 'http://api.catering.student.smartworld.team:2280/category/create/'
+              })
+                  .then((response) => {
+                      // eslint-disable-next-line no-console
+                      console.log(response)
+                  })
+                  .catch((error) => {
+                      // eslint-disable-next-line no-console
+                      console.log(error.response.status)
+                  })
+          }
+      },
+      clearError(){
+          this.menuError = false
+          this.errorStatus = null
       },
       addCategory() {
       },

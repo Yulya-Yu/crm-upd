@@ -104,11 +104,9 @@
                 </div>
             </div>
         </div>
-        <router-link to="/stafflist">
             <button v-on:click="validationInput">
                 Отредактировать
             </button>
-        </router-link>
     </div>
 </template>
 
