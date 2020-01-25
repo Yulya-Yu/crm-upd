@@ -6,7 +6,11 @@
           </div>
           <div class="category-container">
               <div class="category-card" v-for="menuCat in menuAll" :key="menuCat.id">
-                  <button class="category-delete" @click="showModal(menuCat.id)"><img src="@/assets/menu_del.svg"></button>
+                <button class="options-btn"><img src="@/assets/dots.svg" /></button>
+                   <div id="options-content">
+                     <button ><img src="@/assets/edit.svg" class="options-icon"> Редактировать</button>
+                     <button @click="showModal(menuCat.id)"><img src="@/assets/del.svg" class="options-icon"> Удалить</button> 
+                   </div>
                     <transition name="slide-fade">
                   <div class="modal" v-show="selectedId == menuCat.id">
                       <p>Вы уверены что хотите удалить категорию " {{menuCat.name}} " со всеми блюдами ?</p>
@@ -28,6 +32,7 @@
             <div class="mask">
                 <div class="category-modal-container">
                     <div class="addModal">
+                        <button id="modal-close-btn" v-on:click="addCategoryModal=false"><img src="@/assets/menu_del.svg"></button>
                         <h1>Добавить категорию</h1>
                         <div class="form">
                             <input id="category" v-on:click="clearError" maxlength="50"
@@ -101,8 +106,8 @@ return {
               axios({
                   method: 'post',
                   auth: {
-                      username: sessionStorage.getItem('login'),
-                      password: sessionStorage.getItem('password'),
+                      username: 'admin',
+                      password: 'dj5ghg67',
                   },
                   data: {
                       name: this.categoryName
@@ -140,6 +145,85 @@ return {
 </script>
 
 <style scoped>
+
+/* The container <div> - needed to position the dropdown content */
+.options-container {
+  position: relative;
+  display: inline-block;
+}
+/* Dropdown Content (Hidden by Default) */
+
+#options-content {
+  display: none;
+  position: absolute;
+  background-color: #353541;
+  min-width: 150px;
+  z-index: 1;
+  margin-left: 348px;
+  margin-top: -1px;
+}
+
+#options-content button {
+  font-size: 16px;
+  line-height: 20px;
+  color: #C4C4C4;
+  padding: 7px 10px;
+  text-decoration: none;
+  display: block; 
+  border: none;
+  background: #353541;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  width: 100%;
+}
+#options-content button:hover {
+    background-color: #18181E;
+}
+
+/* Show the dropdown menu on hover */
+
+#options-content:hover {
+  display: block;
+}
+
+.options-icon {
+    margin-right: 10px;
+    width: 20px;
+    height: 20px;
+}
+
+.options-btn {
+    border: none;
+    background: none;
+    outline: none;
+    cursor: pointer;
+    width: 25px;
+    height: 20px;
+    margin: 5px 0 0 auto;
+}
+
+#modal-close-btn {
+background: none;
+border: none;
+outline: none;
+margin-top: 0;
+margin-right: 35px;
+width: 15px;
+height: 15px;
+}
+.options-container:hover #options-content {
+  display: block;
+}
+.options-icon {
+    margin-right: 10px;
+    width: 20px;
+    height: 20px;
+}
+.options-container {
+  position: relative;
+  display: inline-block;
+}
 .menu-container {
     background: #E1E1E1;
     width: 100%;
@@ -251,6 +335,7 @@ background: #C4C4C4;
     margin-bottom: 55px;
     text-align: center;
     position: relative;
+    background:#F0F2F4;
 }
 
 .category-delete {
@@ -259,7 +344,7 @@ background-color: transparent;
 border: none;
 display: flex;
 justify-content: flex-end;
-margin: 10px 10px 0 auto;
+margin-left: 10px;
 }
 
 .items-number {
