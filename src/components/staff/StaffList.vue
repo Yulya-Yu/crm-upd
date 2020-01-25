@@ -16,8 +16,8 @@
               <input type="submit" class="search-btn" value="поиск">
        </div>
           <div class="action-btns">
-              <router-link to="/staffregister"><button class="staff-add-btn"  @click="goToRegister()"><img src="@/assets/plus.svg">Добавить Сотрудника</button></router-link>
-              <router-link to="/login"><button class="exit-btn" @click="goToLogin()"><img src="@/assets/exit.svg"></button></router-link>
+              <router-link to="/staffregister"><button class="staff-add-btn"  @click="$router.push('staffregister')"><img src="@/assets/plus.svg">Добавить Сотрудника</button></router-link>
+              <router-link to="/login"><button class="exit-btn" @click="logOut()"><img src="@/assets/exit.svg"></button></router-link>
           </div>
     </div>
     <div class="staff-cards-container" >
@@ -30,9 +30,10 @@
             <div class="options-container">
                    <button class="options-btn"><img src="@/assets/dots.svg" /></button>
                    <div id="options-content">
-                       <router-link v-bind:to="{name:'staffedit', params: {staff_id: staff.id}}"><button @click="goToEdit(staff.id)"><img src="@/assets/edit.svg" class="options-icon"> Редактировать</button></router-link>
+                     <router-link v-bind:to="{name:'staffedit', params: {staff_id: staff.id}}"><button @click="goToEdit(staff.id)"><img src="@/assets/edit.svg" class="options-icon"> Редактировать</button></router-link>
                      <button class="delete-btn" @click="showModal(staff.id)"><img src="@/assets/del.svg" class="options-icon">Уволить</button> 
                    </div>
+                   <transition name="slide-fade">
                                 <div class="modal" v-show="selectedId == staff.id">
                                      <p>Вы уверены что хотите уволить сторудника " {{staff.surname}} {{staff.name}} {{staff.fathername}} " ?</p>
                                      <div class="confirm-btns">
@@ -44,6 +45,7 @@
                                        <button class="confirm-btns cancel-btn" @click="activateConfirm=false">ОК</button>
                                     </div>
                                </div>
+                                </transition>
             </div>
             </div>
             <div class="stats">
@@ -68,7 +70,7 @@
             </div>
         </div>
     </div>
-    <router-link to="/deletedstaff"><button class="staff-add-btn"  @click="goToDeleted()">Удаленные Сотрудники</button></router-link>
+    <router-link to="/deletedstaff"><button class="staff-add-btn"  @click="$router.push('deletedstaff')">Удаленные Сотрудники</button></router-link>
     <router-view />
 </div>
 </template>
@@ -103,7 +105,7 @@ return {
     // }
 },
 
-  methods: {
+  methods: { 
    ...mapActions(['fetchStaff', 'deleteStaff']),
          showModal(id) {
         this.selectedId = id;
@@ -117,23 +119,19 @@ return {
   created() {
       this.fetchStaff();
   },
-    goToRegister() {
-    this.$router.push({name:'staffregister'});
-},
+
     goToEdit() {
     this.$router.push({name:'staffedit'});
 },
-    goToDeleted() {
-    this.$router.push({name:'deletedstaff'});
-},
     goToLogin() {
     this.$router.push({name:'login'});
-}
+ }
 }
 
 </script>
 
 <style scoped>
+
 p {
     margin-bottom: 0;
 }
@@ -144,7 +142,7 @@ p {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    background: #E1E1E1;
+
 }
 .staff-nav {
     display: flex;
@@ -469,7 +467,18 @@ font-size: 14px;
 line-height: 18px;
 color: #353541
 }
-@media screen and (max-width: 1062px) {
+.slide-fade-enter-active {
+    transition: all .3s ease;
+}
+.slide-fade-leave-active {
+    transition: all .3s ease;
+}
+.slide-fade-enter, .slide-fade-leave-to
+    /* .slide-fade-leave-active до версии 2.1.8 */ {
+    transform: translateX(10px);
+    opacity: 0;
+}
+@media screen and (max-width: 1074px) {
     .staff-nav {
         height: 40px;
     }
@@ -477,18 +486,18 @@ color: #353541
         font-size: 14px;
         height: 40px;
         padding: 10px;
-        width: 150px;
+        width: 100px;
     }
 
     /* Dropdown Content (Hidden by Default) */
     .dropdown-content {
-        min-width: 150px;
+        min-width: 100px;
     }
     #options-content {
         display: none;
         position: absolute;
         background-color: #353541;
-        min-width: 150px;
+        min-width: 100px;
         z-index: 1;
         margin-left: 26px;
         margin-top: -45px;
@@ -617,7 +626,7 @@ color: #353541
         padding-left: 20px;
         padding-right: 20px;
         margin-left: 30px;
-        width: 248px;
+        width: 220px;
     }
     .exit-btn {
         width: 93px;
