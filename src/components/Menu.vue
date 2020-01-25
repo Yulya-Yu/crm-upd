@@ -2,17 +2,17 @@
     <div class="menu-container">
           <div class="action-btns">
               <button class="staff-add-btn" @click="addCategoryModal=true"><img src="@/assets/plus.svg">Добавить Категорию</button>
-              <router-link to="/login"><button class="exit-btn" @click="goToLogin()"><img src="@/assets/exit.svg"></button></router-link>
+              <router-link to="/login"><button class="exit-btn" @click="$router.push('login')"><img src="@/assets/exit.svg"></button></router-link>
           </div>
           <div class="category-container">
-              <div class="category-card" v-for="menuCat in menuAll" :key="menuCat.id">
+              <div class="category-card" v-for="(menuCat, index) in menuAll" :key="menuCat.id">
                 <button class="options-btn"><img src="@/assets/dots.svg" /></button>
                    <div id="options-content">
-                     <button ><img src="@/assets/edit.svg" class="options-icon"> Редактировать</button>
-                     <button @click="showModal(menuCat.id)"><img src="@/assets/del.svg" class="options-icon"> Удалить</button> 
+                     <button @click="addCategoryModal = true"><img src="@/assets/edit.svg" class="options-icon"> Редактировать</button>
+                     <button @click="showModal(index)"><img src="@/assets/del.svg" class="options-icon"> Удалить</button> 
                    </div>
                     <transition name="slide-fade">
-                  <div class="modal" v-show="selectedId == menuCat.id">
+                  <div class="modal" v-if="selectedId == index">
                       <p>Вы уверены что хотите удалить категорию " {{menuCat.name}} " со всеми блюдами ?</p>
                       <div class="confirm-btns">
                           <button @click="(deleteMenuItems(menuCat.id)), (closeModal), (activateConfirm=true)" class="delete-btn-modal">Да</button>
@@ -65,7 +65,7 @@ data() {
 return {
     //search: '',
     activateConfirm: false,
-    selectedId:'',
+    selectedId:'index',
     selectedIdConfirm:'',
     addCategoryModal: false,
     menuError: false,
@@ -84,11 +84,11 @@ return {
 },
   methods: { 
    ...mapActions(['fetchMenu', 'deleteMenuItems']),
-      showModal(id) {
-          this.selectedId = id;
+      showModal(index) {
+          this.selectedId = index;
       },
       closeModal() {
-          this.selectedId='';
+          this.selectedId='none';
           this.activateConfirm=false
       },
       closeOkModal() {
@@ -183,8 +183,8 @@ return {
 
 /* Show the dropdown menu on hover */
 
-#options-content:hover {
-  display: block;
+#options-content:hover  {
+  display: block !important;
 }
 
 .options-icon {

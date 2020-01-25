@@ -2,7 +2,7 @@
     <div class="category-container">
           <div class="action-btns">
               <router-link to="/"><button @click="addCategoryModal=true" class="staff-add-btn" ><img src="@/assets/plus.svg">Добавить Блюдо</button></router-link>
-              <router-link to="/login"><button class="exit-btn" @click="goToLogin()"><img src="@/assets/exit.svg"></button></router-link>
+              <router-link to="/login"><button class="exit-btn" @click="$router.push('login')"><img src="@/assets/exit.svg"></button></router-link>
           </div>
           <div class="category-table">
               <table>
@@ -13,8 +13,8 @@
       <th>Цена за порцию (руб)</th>
       <th>Примечание</th>
     </tr>
-    <tr v-for="menuItem in menuAll" :key="menuItem.id">
-                                <div class="modal-menu-item" v-if="itemId == menuItem.id">
+    <tr v-for="(menuItem, index) in menuAll" :key="menuItem.id">
+                                <div class="modal-menu-item" v-show="itemId == index">
                                     <div class="confirm-question">
                                      <p>Вы уверены?</p>
                                     </div>
@@ -24,8 +24,8 @@
                                      </div>
                                 </div>
       <td class="dish-name">
-          <button class="category-edit"><img src="@/assets/edit_menu.png"></button>
-          <button class="category-delete" @click="deleteItemFunc(menuItem.id)"><img src="@/assets/menu_del.svg"></button>
+          <button @click="addCategoryModal=true" class="category-edit"><img src="@/assets/edit_menu.png"></button>
+          <button class="category-delete" @click="deleteItemFunc(index)"><img src="@/assets/menu_del.svg"></button>
           {{menuItem.title}}</td>
       
 
@@ -80,7 +80,7 @@ export default {
         return {
             counter: 0,
             deleteItem:false,
-            itemId: '',
+            itemId: 'index',
             addCategoryModal: false,
             addDish: [{
                 name: 'Наименование блюда',
@@ -161,10 +161,10 @@ export default {
         },
    ...mapActions(['fetchMenu', 'deleteMenuItems']),
       closeItemDeleteModal() {
-      this.itemId = '';
+      this.itemId = null;
       },
-        deleteItemFunc(id) {
-        this.itemId = id;
+        deleteItemFunc(index) {
+        this.itemId = index;
       },
 },
   created() {
@@ -234,7 +234,6 @@ color: #353541;
     margin-left: 147px;
     overflow: hidden;
 }
-
 
 .action-btns {
     margin-right: 30px;
@@ -458,4 +457,44 @@ height:inherit;
     transform: translateX(10px);
     opacity: 0;
 }
+
+@media screen and (max-width: 1117px) {
+table {
+    width: 700px;
+}
+
+th {
+
+    height: 30px;
+    font-size: 14px;
+}
+
+tr {
+    height: 28px;
+    font-size: 12px;
+    line-height: 16px;
+}    
+
+}
+
+@media screen and (max-width: 868px) {
+table {
+    width: 550px;
+}
+
+th {
+
+    height: 30px;
+    font-size: 14px;
+}
+
+tr {
+    height: 28px;
+    font-size: 12px;
+    line-height: 16px;
+}    
+
+
+}
+
 </style>
