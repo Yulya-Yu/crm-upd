@@ -184,7 +184,7 @@ return {
 /* Show the dropdown menu on hover */
 
 #options-content:hover  {
-  display: block !important;
+  display: block ;
 }
 
 .options-icon {
@@ -201,6 +201,10 @@ return {
     width: 25px;
     height: 20px;
     margin: 5px 0 0 auto;
+}
+
+.options-btn:hover~#options-content {
+    display: block;
 }
 
 #modal-close-btn {
