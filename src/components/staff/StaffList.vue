@@ -103,7 +103,7 @@ return {
     // }
 },
 
-  methods: { 
+  methods: {
    ...mapActions(['fetchStaff', 'deleteStaff']),
          showModal(id) {
         this.selectedId = id;

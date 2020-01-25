@@ -25,17 +25,17 @@ const getters = {
 const actions = {
     async fetchStaff({ commit }) {
         const response = await axios.get('http://api.catering.student.smartworld.team:2280/employee/',
-            {auth:{username: 'admin', password: 'dj5ghg67'}});
+            {auth:{username: sessionStorage.getItem('login'), password: sessionStorage.getItem('password')}});
         commit('setStaff', response.data.items);
     },
     async deleteStaff({ commit }, id) {
         await axios.post(`http://api.catering.student.smartworld.team:2280/employee/dismiss?id=${id}`,
-            {username: 'admin'},{auth:{username: 'admin', password: 'dj5ghg67',}});
+            {username: 'admin'},{auth:{username: sessionStorage.getItem('login'), password: sessionStorage.getItem('password')}});
         commit('deleteStaff', id);
     },
     async fetchMenu({ commit }) {
         const response = await axios.get('http://api.catering.student.smartworld.team:2280/category/',
-            {auth:{username: 'admin', password: 'dj5ghg67'}});
+            {auth:{username: sessionStorage.getItem('login'), password: sessionStorage.getItem('password')}});
         commit('setMenu', response.data.items);
         // eslint-disable-next-line no-console
         console.log(response.data.items)

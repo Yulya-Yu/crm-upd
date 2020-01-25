@@ -78,15 +78,15 @@
                     document.getElementById('secondlabel').style.borderBottomColor = '#FF7373'
                 }
                 else{
+                    sessionStorage.setItem('login', this.auth.login);
+                    sessionStorage.setItem('password', this.auth.password);
                     axios({
                         method: 'post',
                         auth: {
-                            // логин и пароль введеный здесь надо сунуть везде где есть запросы(это почти везде)
-                            // надо тогда просто сохранить глобально, что бы отовсюду можно было обратиться к этому
                             username: this.auth.login,
                             password: this.auth.password,
                         },
-                        url: 'http://api.catering.student.smartworld.team:2280/employee/'
+                        url: 'http://api.catering.student.smartworld.team:2280/category/'
                     })
                         .then((response) => {
                             // eslint-disable-next-line no-console
@@ -103,23 +103,20 @@
                                 document.getElementById('password').style.color = '#FF7373'
                                 this.noneuser = true
                             }
-                            else if(error.response.status === 500){
-                                if(error.response.data.message != 'У Вас нет прав для доступа к данной странице'){
-                                    document.getElementById('firstlabel').style.borderBottomColor = '#FF7373'
-                                    document.getElementById('secondlabel').style.borderBottomColor = '#FF7373'
-                                    document.getElementById('login').style.color = '#FF7373'
-                                    document.getElementById('password').style.color = '#FF7373'
-                                    this.noneserver = true
-                                }
-                                else if(error.response.data.message === 'У Вас нет прав для доступа к данной странице'){
+                            else if(error.response.status === 500) {
+                                document.getElementById('firstlabel').style.borderBottomColor = '#FF7373'
+                                document.getElementById('secondlabel').style.borderBottomColor = '#FF7373'
+                                document.getElementById('login').style.color = '#FF7373'
+                                document.getElementById('password').style.color = '#FF7373'
+                                this.noneserver = true
+                            }
+                            else {
+                                if (sessionStorage.getItem('login') === this.auth.login && sessionStorage.getItem('login') === this.auth.password){
                                     this.$router.push('/menu')
-                                    alert('Успешная авторизация')
                                 }
                             }
                         })
                 }
-                // eslint-disable-next-line no-console
-                console.log(this.loginerror)
             },
             clearLoginError: function () {
                 document.getElementById('firstlabel').style.borderBottomColor = '#F0F2F4'

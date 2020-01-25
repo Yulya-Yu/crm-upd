@@ -508,8 +508,8 @@
                     axios({
                         method: 'post',
                         auth: {
-                            username: 'admin',
-                            password: 'dj5ghg67',
+                            username: sessionStorage.getItem('login'),
+                            password: sessionStorage.getItem('password'),
                         },
                         data: {
                             surname: this.user.surname,
