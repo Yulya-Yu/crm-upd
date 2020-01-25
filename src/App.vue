@@ -31,6 +31,7 @@ export default {
 #app {
     display: flex;
     flex-direction: row;
+    background: #E1E1E1;
 }
 
 a {
