@@ -11,6 +11,7 @@ import DeletedStaff from '../components/staff/DeletedStaff.vue'
 import Login from '../components/Login.vue'
 import Menu from '../components/Menu.vue'
 import MenuCategory from '../components/MenuCategory.vue'
+//import { Store } from 'vuex'
 Vue.use(VueRouter)
 
 const routes = [{
@@ -21,7 +22,10 @@ const routes = [{
     {
         path: '/stafflist',
         name: 'stafflist',
-        component: StaffList
+        component: StaffList,
+        meta: {
+            requiresAuth: true
+        }
     },
 
     {
@@ -81,4 +85,23 @@ const router = new VueRouter({
     routes
 })
 
+// Nav Guard
+// router.beforeEach((to, from, next) => {
+//     // Check for requiresAuth guard
+//     if (to.matched.some(record => record.meta.requiresAuth)) {
+//         // Check if NO logged user
+//         if (Store.state.authenticated == false) {
+//             // Go to login
+//             next({
+//                 path: '/login',
+//                 query: {
+//                     redirect: to.fullPath
+//                 }
+//             });
+//         } else {
+//             // Proceed to route
+//             next();
+//         }
+//     }
+// });
 export default router
