@@ -209,8 +209,8 @@ border: none;
 outline: none;
 margin-top: 0;
 margin-right: 35px;
-width: 15px;
-height: 15px;
+width: 35px;
+height: 35px;
 }
 .options-container:hover #options-content {
   display: block;
