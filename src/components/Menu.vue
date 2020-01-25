@@ -207,8 +207,8 @@ return {
 background: none;
 border: none;
 outline: none;
-margin-top: 0;
-margin-right: 35px;
+margin-top: 10px;
+margin-right: 15px;
 width: 35px;
 height: 35px;
 }
@@ -385,7 +385,7 @@ height: 100vh;
 
 .addModal {
     width: 500px;
-    height: 300px;
+    height: 320px;
     background: white;
     border: 3px solid  #353541;
     display: flex;
@@ -396,7 +396,9 @@ height: 100vh;
     font-size: 18px;
     line-height: 21px;
     color: #353541;
+    padding-bottom: 10px;
 }
+
 .addModal h1{
     padding-bottom: 50px;
 }

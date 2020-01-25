@@ -23,7 +23,10 @@
                                         <button @click="closeItemDeleteModal" class="cancel-btn">Нет</button>
                                      </div>
                                 </div>
-      <td class="dish-name"><button class="category-delete" @click="deleteItemFunc(menuItem.id)"><img src="@/assets/menu_del.svg">{{menuItem.title}}</button></td>
+      <td class="dish-name">
+          <button class="category-edit"><img src="@/assets/edit_menu.png"></button>
+          <button class="category-delete" @click="deleteItemFunc(menuItem.id)"><img src="@/assets/menu_del.svg"></button>
+          {{menuItem.title}}</td>
       
 
       <td>120</td>
@@ -37,6 +40,7 @@
             <div class="mask">
                 <div class="category-modal-container">
                     <div class="addModal">
+                        <button id="modal-close-btn" v-on:click="addCategoryModal = false"><img src="@/assets/menu_del.svg"></button>
                         <h1>Добавить блюдо</h1>
                         <div class="form" v-for="(name,index) in addDish" :key="index">
                             <input v-bind:id="addDish[index].type" v-on:click="clearError(index)" maxlength="50"
@@ -132,8 +136,8 @@ export default {
                 axios({
                     method: 'post',
                     auth: {
-                        username: sessionStorage.getItem('login'),
-                        password: sessionStorage.getItem('password'),
+                        username: 'admin',
+                        password: 'dj5ghg67',
                     },
                     data: {
                         name: this.categoryName
@@ -170,6 +174,16 @@ export default {
 </script>
 
 <style scoped>
+#modal-close-btn {
+background: none;
+border: none;
+outline: none;
+margin-top: 10px;
+margin-right: 15px;
+width: 35px;
+height: 35px;
+}
+
 .modal-menu-item {
  width: 132px;
 height: 28px;
@@ -293,13 +307,13 @@ tr {
     line-height: 16px;
     color: #353541;
 }    
-.category-delete img {
+.category-delete img, .category-edit img {
 width: 13px;
 height: 13px;
-margin: auto 13px;
+margin: auto 8px;
 }
 
-.category-delete {
+.category-delete, .category-edit {
 outline: none;
 background-color: transparent;
 border: none;
@@ -333,7 +347,7 @@ height:inherit;
 
 .addModal {
     width: 500px;
-    height: 400px;
+    height: 450px;
     background: white;
     border: 3px solid  #353541;
     display: flex;
@@ -344,10 +358,9 @@ height:inherit;
     font-size: 18px;
     line-height: 21px;
     color: #353541;
+    padding-bottom: 10px;
 }
-.addModal h1{
 
-}
 .addModal button{
     margin-left: auto;
     margin-right: auto;
