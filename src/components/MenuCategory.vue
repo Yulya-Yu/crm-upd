@@ -1,7 +1,7 @@
 <template>
     <div class="category-container">
           <div class="action-btns">
-              <router-link to="/"><button @click="addCategoryModal=true" class="staff-add-btn" ><img src="@/assets/plus.svg">Добавить Блюдо</button></router-link>
+              <button @click="addCategoryModal=true" class="staff-add-btn" ><img src="@/assets/plus.svg">Добавить Блюдо</button>
               <router-link to="/login"><button class="exit-btn" @click="$router.push('login')"><img src="@/assets/exit.svg"></button></router-link>
           </div>
           <div class="category-table">
@@ -13,25 +13,23 @@
       <th>Цена за порцию (руб)</th>
       <th>Примечание</th>
     </tr>
-    <tr v-for="(menuItem, index) in menuAll" :key="menuItem.id">
+    <tr v-for="(menuItem, index) in dishes" :key="menuItem.id">
                                 <div class="modal-menu-item" v-show="itemId == index">
                                     <div class="confirm-question">
                                      <p>Вы уверены?</p>
                                     </div>
                                      <div class="confirm-btns">
-                                        <button @click="closeItemDeleteModal" class="delete-btn-modal">Да</button>
+                                        <button @click="deleteDish" class="delete-btn-modal">Да</button>
                                         <button @click="closeItemDeleteModal" class="cancel-btn">Нет</button>
                                      </div>
                                 </div>
       <td class="dish-name">
           <button @click="addCategoryModal=true" class="category-edit"><img src="@/assets/edit_menu.png"></button>
           <button class="category-delete" @click="deleteItemFunc(index)"><img src="@/assets/menu_del.svg"></button>
-          {{menuItem.title}}</td>
-      
-
-      <td>120</td>
-      <td>210</td>
-      <td>от 7 порций</td>
+          {{menuItem.name}}</td>
+      <td>{{menuItem.weight}}</td>
+      <td>{{menuItem.cost}}</td>
+      <td>{{menuItem.notes}}</td>
     </tr>
   </tbody>
 </table>
@@ -45,6 +43,10 @@
                         <div class="form" v-for="(name,index) in addDish" :key="index">
                             <input v-bind:id="addDish[index].type" v-on:click="clearError(index)" maxlength="50"
                                    v-if="addDish[index].type === 'text'"
+                                   v-on:focus="clearError(index)" v-model="addDish[index].dishInput"
+                                   v-bind:class="{errorcolor: addDish[index].nullInput, errorcolor : addDish[index].falseInput}" required/>
+                            <input v-bind:id="addDish[index].type" v-on:click="clearError(index)" maxlength="50"
+                                   v-if="addDish[index].type === 'textwithnum'"
                                    v-on:focus="clearError(index)" v-model="addDish[index].dishInput"
                                    v-bind:class="{errorcolor: addDish[index].nullInput, errorcolor : addDish[index].falseInput}" required/>
                             <input v-bind:id="addDish[index].type" v-on:click="clearError(index)" maxlength="5"
@@ -78,6 +80,8 @@ export default {
     name: 'menucategory',
     data(){
         return {
+            deletedDishId: null,
+            dishes: null,
             counter: 0,
             deleteItem:false,
             itemId: 'index',
@@ -100,17 +104,48 @@ export default {
                 falseInput: false,
                 nullInput: false,
                 dishInput: null
+            },{
+                name: 'Примечание',
+                type: 'textwithnum',
+                falseInput: false,
+                nullInput: false,
+                dishInput: null
             }],
         }
     },
     computed: {
       ...mapGetters(['menuAll']),
 },
+    beforeMount(){
+        this.getDish()
+    },
     methods: {
+       getDish(){
+            axios({
+                method: 'get',
+                auth: {
+                    username: sessionStorage.getItem('login'),
+                    password: sessionStorage.getItem('password'),
+                },
+                url: `http://api.catering.student.smartworld.team:2280/category/dishes?id=${1}`
+            })
+                .then((response) => {
+                    this.dishes = response.data
+                    // eslint-disable-next-line no-console
+                    console.log(response.data)
+                })
+                .catch((error) => {
+                    // eslint-disable-next-line no-console
+                    console.log(error.response.status)
+                })
+        },
         dishNameValid() {
             this.counter = 0
             for(let i = 0; i< this.addDish.length; i++){
-                if(this.addDish[i].dishInput === null ||
+                if(this.addDish[i].type === 'textwithnum'){
+                    this.counter++
+                }
+                else if(this.addDish[i].dishInput === null ||
                    this.addDish[i].dishInput === undefined ||
                    this.addDish[i].dishInput === ''){
                    this.addDish[i].nullInput = true
@@ -128,22 +163,35 @@ export default {
                else if(this.addDish[i].type === 'number'){
                        this.counter++
                }
+                else if(this.addDish[i].type === 'textwithnum'){
+                    let emailCodeRegex = new RegExp(/^([А-ЯЁа-яё0-9]{1}([а-яё0-9]№?.?,?-? ?){1,49})$/)
+                    let isMenuNameValid = emailCodeRegex.test(this.addDish[i].dishInput)
+                    if (isMenuNameValid === false){
+                        this.addDish[i].falseInput = true
+                    }
+                    else{
+                        this.counter++
+                    }
+                }
            }
             this.dishAdd()
         },
         dishAdd(){
-            if(this.counter === 3){
+            if(this.counter === 4){
                 axios({
                     method: 'post',
                     auth: {
-                        username: 'admin',
-                        password: 'dj5ghg67',
+                        username: sessionStorage.getItem('login'),
+                        password: sessionStorage.getItem('password'),
                     },
                     data: {
-                        name: this.categoryName
+                        category_id: 1,
+                        name: this.addDish[0].dishInput,
+                        cost: this.addDish[1].dishInput,
+                        weight: this.addDish[2].dishInput,
+                        notes: this.addDish[3].dishInput
                     },
-                    // Вот в это юрл потом надо будет добавить id категории в который мы находимся
-                    url: 'http://api.catering.student.smartworld.team:2280/category/create/'
+                    url: `http://api.catering.student.smartworld.team:2280/dish/create`
                     })
                     .then((response) => {
                         // eslint-disable-next-line no-console
@@ -153,6 +201,11 @@ export default {
                         // eslint-disable-next-line no-console
                         console.log(error.response.status)
                     })
+                this.addDish[0].dishInput = null
+                this.addDish[1].dishInput = null
+                this.addDish[2].dishInput = null
+                this.addDish[3].dishInput = null
+                this.addCategoryModal = false
             }
         },
         clearError(id){
@@ -160,11 +213,31 @@ export default {
             this.addDish[id].nullInput = false
         },
    ...mapActions(['fetchMenu', 'deleteMenuItems']),
+        deleteDish() {
+            axios({
+                method: 'post',
+                auth: {
+                    username: sessionStorage.getItem('login'),
+                    password: sessionStorage.getItem('password'),
+                },
+                url: `http://api.catering.student.smartworld.team:2280/dish/delete?id=${this.deletedDishId}`
+            })
+                .then((response) => {
+                    // eslint-disable-next-line no-console
+                    console.log(response)
+                })
+                .catch((error) => {
+                    // eslint-disable-next-line no-console
+                    console.log(error.response.status)
+                })
+            this.itemId = null;
+        },
       closeItemDeleteModal() {
-      this.itemId = null;
+        this.itemId = null;
       },
         deleteItemFunc(index) {
         this.itemId = index;
+        this.deletedDishId = this.dishes[index].id
       },
 },
   created() {
@@ -346,7 +419,7 @@ height:inherit;
 
 .addModal {
     width: 500px;
-    height: 450px;
+    height: 500px;
     background: white;
     border: 3px solid  #353541;
     display: flex;

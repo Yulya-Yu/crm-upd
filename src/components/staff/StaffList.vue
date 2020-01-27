@@ -49,8 +49,7 @@
             </div>
             </div>
             <div class="stats">
-                <p class="deals">сделки: {{staff.deals}}</p>
-                <p class="exp">стаж: 3 года 2 месяца</p>
+                <p class="deals">Cделки: {{staff.deals}}</p>
             </div>
 
             <div class="contacts">
@@ -424,7 +423,6 @@ line-height: 18px;
 color: #848484;
 }
 .deals {
-    border-right: 1px solid #DDDDDD;
     padding: 10px 51px;
 }
 .contacts {

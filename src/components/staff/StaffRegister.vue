@@ -498,10 +498,6 @@
                 }
                 this.regComplited()
                 this.user.role = this.sotr
-                // eslint-disable-next-line no-console
-                console.log(this.counter)
-                // eslint-disable-next-line no-console
-                console.log(this.user)
             },
             regComplited (){
                 if (this.counter === 13){

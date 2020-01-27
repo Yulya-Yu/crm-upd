@@ -5,34 +5,34 @@
               <router-link to="/login"><button class="exit-btn" @click="$router.push('login')"><img src="@/assets/exit.svg"></button></router-link>
           </div>
           <div class="category-container">
-              <div class="category-card" v-for="(menuCat, index) in menuAll" :key="menuCat.id">
+              <div class="category-card" v-for="(menuCat, index) in menuAll" :key="menuCat.category_id.category_id">
                 <button class="options-btn"><img src="@/assets/dots.svg" /></button>
                    <div id="options-content">
-                     <button @click="addCategoryModal = true"><img src="@/assets/edit.svg" class="options-icon"> Редактировать</button>
+                     <button @click="openEditCategory(index)"><img src="@/assets/edit.svg" class="options-icon"> Редактировать</button>
                      <button @click="showModal(index)"><img src="@/assets/del.svg" class="options-icon"> Удалить</button> 
                    </div>
                     <transition name="slide-fade">
                   <div class="modal" v-if="selectedId == index">
-                      <p>Вы уверены что хотите удалить категорию " {{menuCat.name}} " со всеми блюдами ?</p>
+                      <p>Вы уверены что хотите удалить категорию " {{menuCat.name.name}} " со всеми блюдами ?</p>
                       <div class="confirm-btns">
-                          <button @click="(deleteMenuItems(menuCat.id)), (closeModal), (activateConfirm=true)" class="delete-btn-modal">Да</button>
+                          <button @click="(deleteMenuItems(menuCat.category_id.category_id)), (closeModal), (activateConfirm=true)" class="delete-btn-modal">Да</button>
                           <button @click="closeModal" class="cancel-btn">Нет</button>
                       </div>
                       <div class="modal" v-if="activateConfirm==true" @close="activateConfirm=false">
-                          <p>Категория " {{menuCat.name}} " успешно удалена</p>
+                          <p>Категория " {{menuCat.name.name}} " успешно удалена</p>
                           <button class="confirm-btns cancel-btn" @click="closeOkModal">ОК</button>
                       </div>
                   </div>
                     </transition>
-                  <h1 class="category-name">{{menuCat.name}}</h1>
-                  <router-link v-bind:to="{name:'menucategory', params: {cat_id: menuCat.id}}"><button class="items-number" @click="goToCategory(menuCat.id)">{{menuCat.id}} позиций</button></router-link>
+                  <h1 class="category-name">{{menuCat.name.name}}</h1>
+                  <router-link v-bind:to="{name:'menucategory', params: {cat_id: menuCat.category_id.category_id}}"><button class="items-number" @click="goToCategory(menuCat.category_id.category_id)">Позиций: {{menuCat.number}}</button></router-link>
               </div>
           </div>
         <div class="add-category-modal" v-if="addCategoryModal == true">
             <div class="mask">
                 <div class="category-modal-container">
                     <div class="addModal">
-                        <button id="modal-close-btn" v-on:click="addCategoryModal=false"><img src="@/assets/menu_del.svg"></button>
+                        <button id="modal-close-btn1" v-on:click="closeAddEditModal"><img src="@/assets/menu_del.svg"></button>
                         <h1>Добавить категорию</h1>
                         <div class="form">
                             <input id="category" v-on:click="clearError" maxlength="50"
@@ -53,6 +53,31 @@
                 </div>
             </div>
         </div>
+        <div class="add-category-modal" v-if="editCategoryModal == true">
+            <div class="mask">
+                <div class="category-modal-container">
+                    <div class="addModal">
+                        <button id="modal-close-btn2" v-on:click="closeAddEditModal"><img src="@/assets/menu_del.svg"></button>
+                        <h1>Редактировать категорию</h1>
+                        <div class="form">
+                            <input id="categoryRedact" v-on:click="clearError" maxlength="50"
+                                   v-on:focus="clearError" v-model="categoryName"
+                                   v-bind:class="{errorcolor: menuError, errorcolor : nullInput}" required/>
+                            <label v-bind:class="{errorbordercolor: menuError,errorbordercolor: nullInput}" for="categoryRedact" class="label-name">
+                                <span class="content-name" >Наименовние категории</span>
+                                <transition name="slide-fade">
+                                    <span v-if="menuError == 1" class="content-name content-name-error">Обязательное поле</span>
+                                </transition>
+                                <transition name="slide-fade">
+                                    <span v-if="errorStatus == 1" style="top: 54px" class="content-name content-name-error">Неправильный формат заполнения</span>
+                                </transition>
+                            </label>
+                        </div>
+                        <button v-on:click="editCategory">Редактировать</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -68,10 +93,12 @@ return {
     selectedId:'index',
     selectedIdConfirm:'',
     addCategoryModal: false,
+    editCategoryModal: false,
     menuError: false,
     nullInput: false,
     categoryName: null,
-    errorStatus: null
+    errorStatus: null,
+    editId: null,
     }
 },
   computed: { 
@@ -82,8 +109,51 @@ return {
           return isMenuNameValid
       },
 },
-  methods: { 
-   ...mapActions(['fetchMenu', 'deleteMenuItems']),
+  methods: {
+      closeAddEditModal(){
+          this.editCategoryModal = false
+          this.addCategoryModal = false
+          this.categoryName = null
+          this.menuError = false
+          this.errorStatus = null
+          this.editId = null
+      },
+      openEditCategory(id){
+          this.editCategoryModal = true
+          this.editId = id
+      },
+      editCategory(){
+          if(this.categoryName === null || this.categoryName === undefined || this.categoryName === ''){
+              this.menuError = true
+          }
+          else if(this.isMenuNameValid === false){
+              this.errorStatus = 1
+          }
+          else{
+              axios({
+                  method: 'post',
+                  auth: {
+                      username: sessionStorage.getItem('login'),
+                      password: sessionStorage.getItem('password'),
+                  },
+                  data: {
+                      name: this.categoryName
+                  },
+                  url: `http://api.catering.student.smartworld.team:2280/category/update?id=${this.editId}`
+              })
+                  .then((response) => {
+                      // eslint-disable-next-line no-console
+                      console.log(response)
+                  })
+                  .catch((error) => {
+                      // eslint-disable-next-line no-console
+                      console.log(error.response.status)
+                  })
+              this.editCategoryModal=false
+              this.categoryName=null
+          }
+      },
+      ...mapActions(['fetchMenu', 'deleteMenuItems']),
       showModal(index) {
           this.selectedId = index;
       },
@@ -106,8 +176,8 @@ return {
               axios({
                   method: 'post',
                   auth: {
-                      username: 'admin',
-                      password: 'dj5ghg67',
+                      username: sessionStorage.getItem('login'),
+                      password: sessionStorage.getItem('password'),
                   },
                   data: {
                       name: this.categoryName
@@ -122,6 +192,8 @@ return {
                       // eslint-disable-next-line no-console
                       console.log(error.response.status)
                   })
+              this.addCategoryModal=false
+              this.categoryName=null
           }
       },
       clearError(){
@@ -207,7 +279,7 @@ return {
     display: block;
 }
 
-#modal-close-btn {
+#modal-close-btn1 {
 background: none;
 border: none;
 outline: none;
@@ -215,6 +287,15 @@ margin-top: 10px;
 margin-right: 15px;
 width: 35px;
 height: 35px;
+}
+#modal-close-btn2 {
+    background: none;
+    border: none;
+    outline: none;
+    margin-top: 10px;
+    margin-right: 15px;
+    width: 35px;
+    height: 35px;
 }
 .options-container:hover #options-content {
   display: block;
@@ -410,9 +491,10 @@ height: 100vh;
     margin-left: auto;
     margin-right: auto;
     background: #18181E;
-    width: 120px;
+    width: auto;
     height: 40px;
-
+    padding-left: 10px;
+    padding-right: 10px;
     color: #F0F2F4;
     font-size: 22px;
     line-height: 28px;

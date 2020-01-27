@@ -330,14 +330,12 @@
                 axios({
                     method: 'get',
                     auth: {
-                        username: 'admin',
-                        password: 'dj5ghg67',
+                        username: sessionStorage.getItem('login'),
+                        password: sessionStorage.getItem('password'),
                     },
                     url: `http://api.catering.student.smartworld.team:2280/employee/view?id=${this.$route.params.staff_id}`
                 })
                     .then((response) => {
-                        // eslint-disable-next-line no-console
-                        console.log(response.data)
                         this.data = response.data
                         this.forming[0][0].name = response.data.surname
                         this.forming[1][0].name = response.data.name
@@ -361,7 +359,7 @@
                 this.counter = 0
                 for(let i = 0; i< this.forming.length; i++){
                     if(this.forming[i][0].name == null || this.forming[i][0].name == '' || this.forming[i][0].name == undefined) {
-                        if (this.forming[i][0].fieldName === 'fathername'){
+                        if (this.forming[i][0].fieldName === 'fathername' || this.forming[i][0].fieldName === 'password'){
                             this.counter++
                         }
                         else{
@@ -392,8 +390,6 @@
                         }
                         if (this.forming[i][0].fieldName === 'fathername'){
                             if (this.isFathernameValid === false){
-                                // eslint-disable-next-line no-console
-                                console.log('error')
                                 this.forming[i][0].errorIndex = 1
                                 this.forming[i][0].borderError = true
                             }
@@ -538,10 +534,6 @@
                 }
                 this.regComplited()
                 this.user.role = this.sotr
-                // eslint-disable-next-line no-console
-                console.log(this.counter)
-                // eslint-disable-next-line no-console
-                console.log(this.user)
             },
             regComplited (){
                 if (this.counter === 13){
@@ -567,7 +559,7 @@
                             pass: this.user.pass,
                             role: this.sotr,
                         },
-                        url: `http://api.catering.student.smartworld.team:2280/employee/update?id=${this.$route.params.staff_id}`
+                        url: `http://api.catering.student.smartworld.team:2280/employee/edit?id=${this.$route.params.staff_id}`
                     })
                         .then((response) => {
                             // eslint-disable-next-line no-console

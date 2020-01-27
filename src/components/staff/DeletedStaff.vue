@@ -88,8 +88,8 @@ return {
     isModalVisible: false
     }
 },
-  computed: { 
-      ...mapGetters(['allDeletedStaff', 'restoreStaff']),
+  computed: {
+      ...mapGetters(['allDeletedStaff']),
     //   filterStaff: function() {
     //       let filtered = this.allStaff;
     //         if (this.select) {
@@ -101,8 +101,8 @@ return {
     // }
 },
 
-  methods: { 
-   ...mapActions(['fetchDeletedStaff']),
+  methods: {
+      ...mapActions(['fetchDeletedStaff', 'restoreStaff']),
          showModal(id) {
         this.selectedId = id;
         this.selectedIdConfirm = id;

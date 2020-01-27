@@ -23,7 +23,7 @@ const getters = {
         return state.menuCategory.find(category => category.id === id)
     },
     allDeletedStaff: (state) => {
-        return state.deleteStaff
+        return state.deletedStaff
     },
     getDeletedStaffById: (state) => id => {
         return state.deletedStaff.find(deletedStaff => deletedStaff.id == id)
@@ -32,33 +32,39 @@ const getters = {
 
 const actions = {
     async fetchStaff({ commit }) {
-        const response = await axios.get('http://api.catering.student.smartworld.team:2280/employee/', { auth: { username: sessionStorage.getItem('login'), password: sessionStorage.getItem('password') } });
-        commit('setStaff', response.data.items);
+        const response = await axios.get('http://api.catering.student.smartworld.team:2280/employee/staff',
+            { auth: { username: sessionStorage.getItem('login'), password: sessionStorage.getItem('password') } });
+        commit('setStaff', response.data);
     },
     async deleteStaff({ commit }, id) {
-        await axios.post(`http://api.catering.student.smartworld.team:2280/employee/dismiss?id=${id}`, { username: 'admin' }, { auth: { username: sessionStorage.getItem('login'), password: sessionStorage.getItem('password') } });
+        await axios.post(`http://api.catering.student.smartworld.team:2280/employee/dismiss?id=${id}`,
+            { username: 'admin' }, { auth: { username: sessionStorage.getItem('login'), password: sessionStorage.getItem('password') } });
         commit('deleteStaff', id);
     },
     async fetchMenu({ commit }) {
-        const response = await axios.get('http://api.catering.student.smartworld.team:2280/category/', { auth: { username: sessionStorage.getItem('login'), password: sessionStorage.getItem('password') } });
-        commit('setMenu', response.data.items);
-        // eslint-disable-next-line no-console
-        console.log(response.data.items)
+        const response = await axios.get('http://api.catering.student.smartworld.team:2280/category/list',
+            {auth: { username: sessionStorage.getItem('login'), password: sessionStorage.getItem('password') }});
+        commit('setMenu', response.data);
     },
-    // async fetchMenuCategory({ commit }) {
-    //     const response = await axios.get('http://api.catering.student.smartworld.team:2280/category/',
-    //         {auth:{username: 'admin', password: 'dj5ghg67'}});
-    //     commit('setMenu', response.data.items);
-    //     // eslint-disable-next-line no-console
-    //     console.log(response.data.items)
-    // },
     async fetchDeletedStaff({ commit }) {
-        const response = await axios.get('http://api.catering.student.smartworld.team:2280/employee/dismissed-staff', { auth: { username: sessionStorage.getItem('login'), password: sessionStorage.getItem('password') } });
-        commit('setDeletedStaff', response.data.items);
+        const response = await axios.get('http://api.catering.student.smartworld.team:2280/employee/dismissed-staff',
+            { auth: { username: sessionStorage.getItem('login'), password: sessionStorage.getItem('password') } });
+        commit('setDeletedStaff', response.data);
     },
     async restoreStaff({ commit }, id) {
-        await axios.post(`http://api.catering.student.smartworld.team:2280/employee/?id=${id}`, { auth: { username: sessionStorage.getItem('login'), password: sessionStorage.getItem('password') } });
-        commit('restoreStaff', id);
+        await axios.post(`http://api.catering.student.smartworld.team:2280/employee/restore-work?id=${id}`,
+            { username: 'admin' },{ auth: { username: sessionStorage.getItem('login'), password: sessionStorage.getItem('password') } });
+        commit('setDeletedStaff', id);
+    },
+    async deleteMenuItems({ commit }, id) {
+        await axios.post(`http://api.catering.student.smartworld.team:2280/category/delete-category?id=${id}`,
+            { username: 'admin' }, { auth: { username: sessionStorage.getItem('login'), password: sessionStorage.getItem('password') } });
+        commit('setDeleteMenuItems', id);
+    },
+    async fetchDishes({ commit }, id) {
+        await axios.get(`http://api.catering.student.smartworld.team:2280/category/dishes?id=${id}`,
+            { auth: { username: sessionStorage.getItem('login'), password: sessionStorage.getItem('password') } });
+        commit('setfetchDishes', id);
     },
 };
 
@@ -70,6 +76,7 @@ const mutations = {
     //     state.authenticated = status;
     // }
     setDeletedStaff: (state, deletedStaff) => (state.deletedStaff = deletedStaff),
+    setDeleteMenuItems: (state, id) => state.menuCategory = state.menuCategory.filter(category => category.id !== id),
 };
 
 export default {
