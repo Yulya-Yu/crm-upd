@@ -349,6 +349,7 @@
                         this.forming[9][0].name = response.data.date_of_issue_of_passport
                         this.forming[10][0].name = response.data.passport_issued_by
                         this.forming[11][0].name = response.data.login
+
                     })
                     .catch((error) => {
                         // eslint-disable-next-line no-console
@@ -359,7 +360,11 @@
                 this.counter = 0
                 for(let i = 0; i< this.forming.length; i++){
                     if(this.forming[i][0].name == null || this.forming[i][0].name == '' || this.forming[i][0].name == undefined) {
-                        if (this.forming[i][0].fieldName === 'fathername' || this.forming[i][0].fieldName === 'password'){
+                        if (this.forming[i][0].fieldName === 'fathername'){
+                            this.counter++
+                        }
+                        else if(this.forming[i][0].fieldName === 'password'){
+                            this.user.pass = this.data.pass
                             this.counter++
                         }
                         else{

@@ -24,7 +24,7 @@
                                      </div>
                                 </div>
       <td class="dish-name">
-          <button @click="addCategoryModal=true" class="category-edit"><img src="@/assets/edit_menu.png"></button>
+          <button @click="editModalOpen(index)" class="category-edit"><img src="@/assets/edit_menu.png"></button>
           <button class="category-delete" @click="deleteItemFunc(index)"><img src="@/assets/menu_del.svg"></button>
           {{menuItem.name}}</td>
       <td>{{menuItem.weight}}</td>
@@ -38,7 +38,7 @@
             <div class="mask">
                 <div class="category-modal-container">
                     <div class="addModal">
-                        <button id="modal-close-btn" v-on:click="addCategoryModal = false"><img src="@/assets/menu_del.svg"></button>
+                        <button id="modal-close-btn1" v-on:click="addCategoryModal = false"><img src="@/assets/menu_del.svg"></button>
                         <h1>Добавить блюдо</h1>
                         <div class="form" v-for="(name,index) in addDish" :key="index">
                             <input v-bind:id="addDish[index].type" v-on:click="clearError(index)" maxlength="50"
@@ -69,6 +69,42 @@
                 </div>
             </div>
         </div>
+
+        <div class="add-category-modal" v-if="editCategoryModal == true">
+            <div class="mask">
+                <div class="category-modal-container">
+                    <div class="addModal">
+                        <button id="modal-close-btn2" v-on:click="closeEditModal"><img src="@/assets/menu_del.svg"></button>
+                        <h1>Редактировать блюдо</h1>
+                        <div class="form" v-for="(name,index) in addDish" :key="index">
+                            <input v-bind:id="addDish[index].type" v-on:click="clearError(index)" maxlength="50"
+                                   v-if="addDish[index].type === 'text'"
+                                   v-on:focus="clearError(index)" v-model="addDish[index].dishInput"
+                                   v-bind:class="{errorcolor: addDish[index].nullInput, errorcolor : addDish[index].falseInput}" required/>
+                            <input v-bind:id="addDish[index].type" v-on:click="clearError(index)" maxlength="50"
+                                   v-if="addDish[index].type === 'textwithnum'"
+                                   v-on:focus="clearError(index)" v-model="addDish[index].dishInput"
+                                   v-bind:class="{errorcolor: addDish[index].nullInput, errorcolor : addDish[index].falseInput}" required/>
+                            <input v-bind:id="addDish[index].type" v-on:click="clearError(index)" maxlength="5"
+                                   v-if="addDish[index].type === 'number'"
+                                   v-mask="{mask: '9{5}', placeholder: ' '}"
+                                   v-on:focus="clearError(index)" v-model="addDish[index].dishInput"
+                                   v-bind:class="{errorcolor: addDish[index].nullInput, errorcolor : addDish[index].falseInput}" required/>
+                            <label v-bind:class="{errorbordercolor: addDish[index].nullInput,errorbordercolor: addDish[index].falseInput}" :for="addDish.type" class="label-name">
+                                <span class="content-name" >{{addDish[index].name}}</span>
+                                <transition name="slide-fade">
+                                    <span v-if="addDish[index].nullInput === true" class="content-name content-name-error">Обязательное поле</span>
+                                </transition>
+                                <transition name="slide-fade">
+                                    <span v-if="addDish[index].falseInput === true" style="top: 54px" class="content-name content-name-error">Неправильный формат заполнения</span>
+                                </transition>
+                            </label>
+                        </div>
+                        <button v-on:click="dishNameEditValid">Редактировать</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -80,6 +116,8 @@ export default {
     name: 'menucategory',
     data(){
         return {
+            editedId: null,
+            editCategoryModal: false,
             deletedDishId: null,
             dishes: null,
             counter: 0,
@@ -120,6 +158,93 @@ export default {
         this.getDish()
     },
     methods: {
+        dishEdit(){
+            if(this.counter === 4){
+                axios({
+                    method: 'post',
+                    auth: {
+                        username: sessionStorage.getItem('login'),
+                        password: sessionStorage.getItem('password'),
+                    },
+                    data: {
+                        category_id: this.$route.params.cat_id,
+                        name: this.addDish[0].dishInput,
+                        cost: this.addDish[1].dishInput,
+                        weight: this.addDish[2].dishInput,
+                        notes: this.addDish[3].dishInput
+                    },
+                    url: `http://api.catering.student.smartworld.team:2280/dish/update?id=${this.editedId}`
+                })
+                    .then((response) => {
+                        // eslint-disable-next-line no-console
+                        console.log(response)
+                    })
+                    .catch((error) => {
+                        // eslint-disable-next-line no-console
+                        console.log(error.response.status)
+                    })
+                this.addDish[0].dishInput = null
+                this.addDish[1].dishInput = null
+                this.addDish[2].dishInput = null
+                this.addDish[3].dishInput = null
+                this.counter = 0
+                this.editedId = null
+                this.editCategoryModal = false
+            }
+        },
+        dishNameEditValid(){
+            this.counter = 0
+            for(let i = 0; i< this.addDish.length; i++){
+                if(this.addDish[i].type === 'textwithnum'){
+                    this.counter++
+                }
+                else if(this.addDish[i].dishInput === null ||
+                    this.addDish[i].dishInput === undefined ||
+                    this.addDish[i].dishInput === ''){
+                    this.addDish[i].nullInput = true
+                }
+                else if(this.addDish[i].type === 'text'){
+                    let emailCodeRegex = new RegExp(/^([А-ЯЁа-яё]{1}[а-яё]{1,49})$/)
+                    let isMenuNameValid = emailCodeRegex.test(this.addDish[i].dishInput)
+                    if (isMenuNameValid === false){
+                        this.addDish[i].falseInput = true
+                    }
+                    else{
+                        this.counter++
+                    }
+                }
+                else if(this.addDish[i].type === 'number'){
+                    this.counter++
+                }
+                else if(this.addDish[i].type === 'textwithnum'){
+                    let emailCodeRegex = new RegExp(/^([А-ЯЁа-яё0-9]{1}([а-яё0-9]№?.?,?-? ?){1,49})$/)
+                    let isMenuNameValid = emailCodeRegex.test(this.addDish[i].dishInput)
+                    if (isMenuNameValid === false){
+                        this.addDish[i].falseInput = true
+                    }
+                    else{
+                        this.counter++
+                    }
+                }
+            }
+            this.dishEdit()
+        },
+        closeEditModal(){
+            this.editedId = null
+            this.addDish[0].dishInput = null
+            this.addDish[1].dishInput = null
+            this.addDish[2].dishInput = null
+            this.addDish[3].dishInput = null
+            this.editCategoryModal = false
+        },
+        editModalOpen(id){
+            this.editedId = this.dishes[id].id
+            this.editCategoryModal = true
+            this.addDish[0].dishInput = this.dishes[id].name
+            this.addDish[1].dishInput = this.dishes[id].weight
+            this.addDish[2].dishInput = this.dishes[id].cost
+            this.addDish[3].dishInput = this.dishes[id].notes
+        },
        getDish(){
             axios({
                 method: 'get',
@@ -127,7 +252,7 @@ export default {
                     username: sessionStorage.getItem('login'),
                     password: sessionStorage.getItem('password'),
                 },
-                url: `http://api.catering.student.smartworld.team:2280/category/dishes?id=${1}`
+                url: `http://api.catering.student.smartworld.team:2280/category/dishes?id=${this.$route.params.cat_id}`
             })
                 .then((response) => {
                     this.dishes = response.data
@@ -185,7 +310,7 @@ export default {
                         password: sessionStorage.getItem('password'),
                     },
                     data: {
-                        category_id: 1,
+                        category_id: this.$route.params.cat_id,
                         name: this.addDish[0].dishInput,
                         cost: this.addDish[1].dishInput,
                         weight: this.addDish[2].dishInput,
@@ -205,6 +330,7 @@ export default {
                 this.addDish[1].dishInput = null
                 this.addDish[2].dishInput = null
                 this.addDish[3].dishInput = null
+                this.counter = 0
                 this.addCategoryModal = false
             }
         },
@@ -232,13 +358,13 @@ export default {
                 })
             this.itemId = null;
         },
-      closeItemDeleteModal() {
+        closeItemDeleteModal() {
         this.itemId = null;
-      },
+        },
         deleteItemFunc(index) {
         this.itemId = index;
         this.deletedDishId = this.dishes[index].id
-      },
+        },
 },
   created() {
       this.fetchMenu();
@@ -247,7 +373,7 @@ export default {
 </script>
 
 <style scoped>
-#modal-close-btn {
+#modal-close-btn2 {
 background: none;
 border: none;
 outline: none;
@@ -255,6 +381,15 @@ margin-top: 10px;
 margin-right: 15px;
 width: 35px;
 height: 35px;
+}
+#modal-close-btn1 {
+    background: none;
+    border: none;
+    outline: none;
+    margin-top: 10px;
+    margin-right: 15px;
+    width: 35px;
+    height: 35px;
 }
 
 .modal-menu-item {
@@ -378,7 +513,7 @@ tr {
     font-size: 14px;
     line-height: 16px;
     color: #353541;
-}    
+}
 .category-delete img, .category-edit img {
 width: 13px;
 height: 13px;
@@ -437,7 +572,7 @@ height:inherit;
     margin-left: auto;
     margin-right: auto;
     background: #18181E;
-    width: 120px;
+    width: auto;
     height: 40px;
     color: #F0F2F4;
     font-size: 22px;
@@ -447,6 +582,8 @@ height:inherit;
     margin-top: 20px;
     transition: 0.3s;
     border: 1px solid #18181E;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 .addModal button:hover {
     background-color: #F0F2F4;
@@ -546,7 +683,7 @@ tr {
     height: 28px;
     font-size: 12px;
     line-height: 16px;
-}    
+}
 
 }
 
@@ -565,7 +702,7 @@ tr {
     height: 28px;
     font-size: 12px;
     line-height: 16px;
-}    
+}
 
 
 }
