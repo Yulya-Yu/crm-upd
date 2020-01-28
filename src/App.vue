@@ -32,6 +32,7 @@ export default {
     display: flex;
     flex-direction: row;
     background: #E1E1E1;
+    min-height: 100vh;
 }
 
 a {

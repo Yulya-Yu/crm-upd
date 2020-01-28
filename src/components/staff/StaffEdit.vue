@@ -608,9 +608,9 @@
     }
     .registr{
         width: 100vw;
-        height: 100vh;
+        height: 100%;
         max-width: 100vw;
-        max-height: 100vh;
+        max-height: 100%;
         display: flex;
         flex-direction: column;
         padding-left: 300px;
