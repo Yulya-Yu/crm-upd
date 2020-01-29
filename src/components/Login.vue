@@ -78,6 +78,7 @@
                     document.getElementById('secondlabel').style.borderBottomColor = '#FF7373'
                 }
                 else{
+
                     sessionStorage.setItem('login', this.auth.login);
                     sessionStorage.setItem('password', this.auth.password);
                     axios({
@@ -110,11 +111,13 @@
                                 document.getElementById('password').style.color = '#FF7373'
                                 this.noneserver = true
                             }
-                            else {
-                                if (sessionStorage.getItem('login') === this.auth.login && sessionStorage.getItem('login') === this.auth.password){
-                                    this.$router.push('/menu')
-                                }
-                            }
+                            // else {
+                                
+                            //     if (sessionStorage.getItem('login') === this.auth.login && sessionStorage.getItem('login') === this.auth.password){
+                            //         this.$router.push('/menu')
+                            //     }
+                    
+                            // }
                         })
                 }
             },

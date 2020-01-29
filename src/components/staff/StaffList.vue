@@ -4,7 +4,6 @@
       <div class="dropdown">
         <select class="dropbtn">
           <option selected disabled value>Сортировать по:</option>
-          <option>Стажу</option>
           <option>Количеству сделок</option>
           <option>Фамилии</option>
           <option>Дате Рождения</option>
@@ -118,11 +117,14 @@ export default {
   },
   computed: {
     ...mapGetters(["allStaff"]),
-    filteredStaff: function() {
-      return this.allStaff.filter(staff => {
-        return staff.name.match(this.search);
-      });
-    }
+filteredStaff() {
+          const value= this.search.charAt(0).toUpperCase() + this.search.slice(1);
+          return this.allStaff.filter(function(allStaff){
+              return allStaff.name.indexOf(value) > -1 ||
+                  allStaff.surname.indexOf(value) > -1 ||
+                  allStaff.fathername.indexOf(value) > -1
+          })
+      }
   },
 
   methods: {

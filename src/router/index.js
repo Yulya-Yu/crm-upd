@@ -15,11 +15,7 @@ import MenuCategory from '../components/MenuCategory.vue'
 Vue.use(VueRouter)
 
 const routes = [{
-        path: '/',
-        name: 'stafflist',
-        component: StaffList
-    },
-    {
+
         path: '/stafflist',
         name: 'stafflist',
         component: StaffList,
@@ -31,47 +27,73 @@ const routes = [{
     {
         path: '/staffregister',
         name: 'staffregister',
-        component: StaffRegister
+        component: StaffRegister,
+        meta: {
+            requiresAuth: true
+        },
     },
     {
         path: '/staffedit/:staff_id',
         name: 'staffedit',
         component: StaffEdit,
+        meta: {
+            requiresAuth: true
+        },
     },
     {
         path: '/clients',
         name: 'clients',
-        component: Clients
+        component: Clients,
+        meta: {
+            requiresAuth: true
+        },
     },
     {
         path: '/orders',
         name: 'orders',
-        component: Orders
+        component: Orders,
+        meta: {
+            requiresAuth: true
+        },
     },
     {
         path: '/report',
         name: 'report',
-        component: Report
+        component: Report,
+        meta: {
+            requiresAuth: true
+        },
     },
     {
         path: '/requests',
         name: 'requests',
-        component: Requests
+        component: Requests,
+        meta: {
+            requiresAuth: true
+        },
     },
     {
         path: '/deletedstaff',
         name: 'deletedstaff',
-        component: DeletedStaff
+        component: DeletedStaff,
+        meta: {
+            requiresAuth: true
+        },
     },
     {
         path: '/login',
         name: 'login',
-        component: Login
+        component: Login,
+        meta: { hideNavigation: true }
+
     },
     {
         path: '/menu',
         name: 'menu',
         component: Menu,
+        meta: {
+            requiresAuth: true
+        },
 
     },
     {
@@ -86,11 +108,29 @@ const router = new VueRouter({
 })
 
 // Nav Guard
+router.beforeEach((to, from, next) => {
+    if (to.matched.some(record => record.meta.requiresAuth)) {
+        if (sessionStorage.getItem('login') === null || sessionStorage.getItem('login') === undefined || sessionStorage.getItem('login') === '' &&
+            sessionStorage.getItem('password') === null || sessionStorage.getItem('password') === undefined || sessionStorage.getItem('password') === '') {
+            next({
+                path: '/login',
+                query: {
+                    redirect: to.fullPath
+                }
+            });
+        } else {
+            next();
+        }
+    } else {
+        next();
+    }
+});
 // router.beforeEach((to, from, next) => {
 //     // Check for requiresAuth guard
 //     if (to.matched.some(record => record.meta.requiresAuth)) {
 //         // Check if NO logged user
-//         if (Store.state.authenticated == false) {
+//         if (sessionStorage.getItem('login') === null || sessionStorage.getItem('login') === undefined || sessionStorage.getItem('login') === '' &&
+//             sessionStorage.getItem('password') === null || sessionStorage.getItem('password') === undefined || sessionStorage.getItem('password') === '') {
 //             // Go to login
 //             next({
 //                 path: '/login',
@@ -102,6 +142,19 @@ const router = new VueRouter({
 //             // Proceed to route
 //             next();
 //         }
+//     } 
+// });
+
+// router.beforeEach((to,from,next) => {
+//     if (to.matched.some(record => record.meta.requiresAuth)) {
+//         if (sessionStorage.getItem('login') === null || sessionStorage.getItem('login') === undefined || 
+//             sessionStorage.getItem('login') === '' &&
+//             sessionStorage.getItem('password') === null || sessionStorage.getItem('password') === undefined ||
+//             sessionStorage.getItem('password') === '') {
+
+//         }
+//     } else {
+// next();
 //     }
 // });
 export default router
