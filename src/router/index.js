@@ -15,13 +15,9 @@ import MenuCategory from '../components/MenuCategory.vue'
 Vue.use(VueRouter)
 
 const routes = [{
-
         path: '/',
-        name: 'orders',
-        component: Orders,
-        meta: {
-            requiresAuth: true
-        }
+        name: 'stafflist',
+        component: StaffList
     },
     {
         path: '/stafflist',
@@ -35,73 +31,47 @@ const routes = [{
     {
         path: '/staffregister',
         name: 'staffregister',
-        component: StaffRegister,
-        meta: {
-            requiresAuth: true
-        },
+        component: StaffRegister
     },
     {
         path: '/staffedit/:staff_id',
         name: 'staffedit',
         component: StaffEdit,
-        meta: {
-            requiresAuth: true
-        },
     },
     {
         path: '/clients',
         name: 'clients',
-        component: Clients,
-        meta: {
-            requiresAuth: true
-        },
+        component: Clients
     },
     {
         path: '/orders',
         name: 'orders',
-        component: Orders,
-        meta: {
-            requiresAuth: true
-        },
+        component: Orders
     },
     {
         path: '/report',
         name: 'report',
-        component: Report,
-        meta: {
-            requiresAuth: true
-        },
+        component: Report
     },
     {
         path: '/requests',
         name: 'requests',
-        component: Requests,
-        meta: {
-            requiresAuth: true
-        },
+        component: Requests
     },
     {
         path: '/deletedstaff',
         name: 'deletedstaff',
-        component: DeletedStaff,
-        meta: {
-            requiresAuth: true
-        },
+        component: DeletedStaff
     },
     {
         path: '/login',
         name: 'login',
-        component: Login,
-        meta: { hideNavigation: true }
-
+        component: Login
     },
     {
         path: '/menu',
         name: 'menu',
         component: Menu,
-        meta: {
-            requiresAuth: true
-        },
 
     },
     {
@@ -116,29 +86,11 @@ const router = new VueRouter({
 })
 
 // Nav Guard
-router.beforeEach((to, from, next) => {
-    if (to.matched.some(record => record.meta.requiresAuth)) {
-        if (sessionStorage.getItem('login') === null || sessionStorage.getItem('login') === undefined || sessionStorage.getItem('login') === '' &&
-            sessionStorage.getItem('password') === null || sessionStorage.getItem('password') === undefined || sessionStorage.getItem('password') === '') {
-            next({
-                path: '/login',
-                query: {
-                    redirect: to.fullPath
-                }
-            });
-        } else {
-            next();
-        }
-    } else {
-        next();
-    }
-});
 // router.beforeEach((to, from, next) => {
 //     // Check for requiresAuth guard
 //     if (to.matched.some(record => record.meta.requiresAuth)) {
 //         // Check if NO logged user
-//         if (sessionStorage.getItem('login') === null || sessionStorage.getItem('login') === undefined || sessionStorage.getItem('login') === '' &&
-//             sessionStorage.getItem('password') === null || sessionStorage.getItem('password') === undefined || sessionStorage.getItem('password') === '') {
+//         if (Store.state.authenticated == false) {
 //             // Go to login
 //             next({
 //                 path: '/login',
@@ -150,19 +102,6 @@ router.beforeEach((to, from, next) => {
 //             // Proceed to route
 //             next();
 //         }
-//     } 
-// });
-
-// router.beforeEach((to,from,next) => {
-//     if (to.matched.some(record => record.meta.requiresAuth)) {
-//         if (sessionStorage.getItem('login') === null || sessionStorage.getItem('login') === undefined || 
-//             sessionStorage.getItem('login') === '' &&
-//             sessionStorage.getItem('password') === null || sessionStorage.getItem('password') === undefined ||
-//             sessionStorage.getItem('password') === '') {
-
-//         }
-//     } else {
-// next();
 //     }
 // });
 export default router

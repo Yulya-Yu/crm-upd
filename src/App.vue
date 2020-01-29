@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-<Navbar v-if="!$route.meta.hideNavigation"/>
+<Navbar />
  <router-view/>
   </div>
 </template>
@@ -11,7 +11,12 @@ export default {
       components:{
         Navbar
      },
-
+     beforeMount() {
+         if (sessionStorage.getItem('login') === null || sessionStorage.getItem('login') === undefined || sessionStorage.getItem('login') === ''
+         && sessionStorage.getItem('password') === null || sessionStorage.getItem('password') === undefined || sessionStorage.getItem('password') === ''){
+             this.$router.push('/menu')
+         }
+     }
 }
 </script>
 <style>

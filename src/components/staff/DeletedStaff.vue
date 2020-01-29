@@ -4,13 +4,14 @@
       <div class="dropdown">
         <select class="dropbtn">
           <option selected disabled value>Сортировать по:</option>
+          <option>Стажу</option>
           <option>Количеству сделок</option>
           <option>Фамилии</option>
           <option>Дате Рождения</option>
         </select>
       </div>
       <div class="search-field">
-        <input type="text" v-model="search"/>
+        <input type="text" />
         <input type="submit" class="search-btn" value="поиск" />
       </div>
       <div class="action-btns">
@@ -24,7 +25,7 @@
     <div class="staff-cards-container">
       <div
         class="staff-card"
-        v-for="delStaff in filterDeletedStaff"
+        v-for="delStaff in allDeletedStaff"
         :key="delStaff.id"
         :delStaff="delStaff"
       >
@@ -105,25 +106,24 @@ export default {
       activateConfirm: false,
       selectedId: "",
       selectedIdConfirm: "",
-      isModalVisible: false,
-      search: ""
+      isModalVisible: false
     };
   },
   computed: {
-    ...mapGetters(["allDeletedStaff"]),
-        filterDeletedStaff() {
-          const value= this.search.charAt(0).toUpperCase() + this.search.slice(1);
-          return this.allDeletedStaff.filter(function(allDeletedStaff){
-              return allDeletedStaff.name.indexOf(value) > -1 ||
-                  allDeletedStaff.surname.indexOf(value) > -1 ||
-                  allDeletedStaff.fathername.indexOf(value) > -1
-          })
-        },
+    ...mapGetters(["allDeletedStaff"])
+    //   filterStaff: function() {
+    //       let filtered = this.allStaff;
+    //         if (this.select) {
+    //         filtered = this.allStaff.filter(
+    //         staff => staff.sortStaff.toLowerCase() === this.select.toLowerCase()
+    //     );
+    //   }
+    //   return filtered;
+    // }
   },
 
   methods: {
     ...mapActions(["fetchDeletedStaff", "restoreStaff"]),
-
     showModal(id) {
       this.selectedId = id;
       this.selectedIdConfirm = id;

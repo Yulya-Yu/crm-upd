@@ -49,7 +49,7 @@
         >
           <button
             class="items-number"
-           
+            @click="goToCategory(menuCat.category_id.category_id)"
           >Позиций: {{menuCat.number}}</button>
         </router-link>
       </div>
@@ -186,39 +186,39 @@ export default {
       this.editCategoryModal = true;
       this.editId = id;
     },
-    // editCategory() {
-    //   if (
-    //     this.categoryName === null ||
-    //     this.categoryName === undefined ||
-    //     this.categoryName === ""
-    //   ) {
-    //     this.menuError = true;
-    //   } else if (this.isMenuNameValid === false) {
-    //     this.errorStatus = 1;
-    //   } else {
-    //     axios({
-    //       method: "post",
-    //       auth: {
-    //         username: sessionStorage.getItem("login"),
-    //         password: sessionStorage.getItem("password")
-    //       },
-    //       data: {
-    //         name: this.categoryName
-    //       },
-    //       url: `http://api.catering.student.smartworld.team:2280/category/update?id=${this.editId}`
-    //     })
-    //       .then(response => {
-    //         // eslint-disable-next-line no-console
-    //         console.log(response);
-    //       })
-    //       .catch(error => {
-    //         // eslint-disable-next-line no-console
-    //         console.log(error.response.status);
-    //       });
-    //     this.editCategoryModal = false;
-    //     this.categoryName = null;
-    //   }
-    // },
+    editCategory() {
+      if (
+        this.categoryName === null ||
+        this.categoryName === undefined ||
+        this.categoryName === ""
+      ) {
+        this.menuError = true;
+      } else if (this.isMenuNameValid === false) {
+        this.errorStatus = 1;
+      } else {
+        axios({
+          method: "post",
+          auth: {
+            username: sessionStorage.getItem("login"),
+            password: sessionStorage.getItem("password")
+          },
+          data: {
+            name: this.categoryName
+          },
+          url: `http://api.catering.student.smartworld.team:2280/category/update?id=${this.editId}`
+        })
+          .then(response => {
+            // eslint-disable-next-line no-console
+            console.log(response);
+          })
+          .catch(error => {
+            // eslint-disable-next-line no-console
+            console.log(error.response.status);
+          });
+        this.editCategoryModal = false;
+        this.categoryName = null;
+      }
+    },
     ...mapActions(["fetchMenu", "deleteMenuItems"]),
     showModal(index) {
       this.selectedId = index;

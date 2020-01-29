@@ -2,7 +2,7 @@
   <div class="staff-list-containers">
     <div class="staff-nav">
       <div class="dropdown">
-        <select class="dropbtn">
+        <select v-on:click="fetchStaff(`${whoSorted}`)" v-on:change="whichSort" class="dropbtn">
           <option selected disabled value>Сортировать по:</option>
           <option>Количеству сделок</option>
           <option>Фамилии</option>
@@ -68,7 +68,6 @@
         <div class="stats">
           <p class="deals">Cделки: {{staff.deals}}</p>
         </div>
-
         <div class="contacts">
           <div class="contact-data">
             <h5>Контакты:</h5>
@@ -104,10 +103,9 @@ import { mapGetters, mapActions } from "vuex";
 export default {
   name: "stafflist",
   components: {},
-
   data() {
     return {
-      //search: '',
+      whoSorted: 'staff',
       activateConfirm: false,
       selectedId: "",
       selectedIdConfirm: "",
@@ -117,7 +115,7 @@ export default {
   },
   computed: {
     ...mapGetters(["allStaff"]),
-filteredStaff() {
+      filteredStaff() {
           const value= this.search.charAt(0).toUpperCase() + this.search.slice(1);
           return this.allStaff.filter(function(allStaff){
               return allStaff.name.indexOf(value) > -1 ||
@@ -128,7 +126,24 @@ filteredStaff() {
   },
 
   methods: {
-    ...mapActions(["fetchStaff", "deleteStaff"]),
+      ...mapActions(["fetchStaff", "deleteStaff"]),
+      whichSort(id){
+        if(id.target.value === 'Фамилии'){
+            this.whoSorted = 'sort-by?sort=surname'
+        }
+          else if(id.target.value === 'Количеству сделок'){
+              this.whoSorted = 'sort-by?sort=deals'
+          }
+          else if(id.target.value === 'Дате Рождения'){
+              this.whoSorted = 'sort-by?sort=birth_date'
+          }
+          else {
+            this.whoSorted = 'staff'
+        }
+          // eslint-disable-next-line no-console
+            console.log(id)
+      },
+
     showModal(id) {
       this.selectedId = id;
       this.selectedIdConfirm = id;
