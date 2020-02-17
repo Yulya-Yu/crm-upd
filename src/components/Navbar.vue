@@ -6,7 +6,7 @@
           </div>
           <router-link to="/requests"><img src="@/assets/zayavki.svg" class="nav-icons"/>Заявки</router-link>
           <router-link to="/orders"><img src="@/assets/zakaz.svg" />Заказы</router-link>
-          <router-link to="/clients"><img src="@/assets/klient.svg" />Клиенты</router-link>
+          <router-link to="/clientsmain"><img src="@/assets/klient.svg" />Клиенты</router-link>
           <router-link to="/stafflist"><img src="@/assets/sotrudniki.svg" />Сотрудники</router-link>
           <router-link to="/report"><img src="@/assets/otchet.svg" />Отчет</router-link>
             <router-link to="/menu"><img src="@/assets/menu.svg" />Меню</router-link>
@@ -60,7 +60,6 @@
   height: 46px;
   margin: 0 auto;
 }
-
 .user-name {
   font-size: 16px;
 line-height: 20px;

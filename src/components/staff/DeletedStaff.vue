@@ -2,17 +2,17 @@
   <div class="staff-list-containers">
     <div class="staff-nav">
       <div class="dropdown">
-        <select class="dropbtn">
-          <option selected disabled value>Сортировать по:</option>
-          <option>Стажу</option>
+        <select v-on:change="whichSort" class="dropbtn">
+          <option selected value>Сортировать по:</option>
           <option>Количеству сделок</option>
           <option>Фамилии</option>
           <option>Дате Рождения</option>
+          <option>Должности</option>
         </select>
       </div>
       <div class="search-field">
-        <input type="text" />
-        <input type="submit" class="search-btn" value="поиск" />
+        <input type="text" v-model="search"/>
+        <input type="submit" class="search-btn" value="поиск" v-on:click="whichSearch"/>
       </div>
       <div class="action-btns">
         <router-link to="/login">
@@ -61,7 +61,6 @@
         </div>
         <div class="stats">
           <p class="deals">сделки: {{delStaff.deals}}</p>
-          <p class="exp">стаж: 3 года 2 месяца</p>
         </div>
 
         <div class="contacts">
@@ -106,24 +105,48 @@ export default {
       activateConfirm: false,
       selectedId: "",
       selectedIdConfirm: "",
-      isModalVisible: false
+      isModalVisible: false,
+      search: ""
     };
   },
   computed: {
-    ...mapGetters(["allDeletedStaff"])
-    //   filterStaff: function() {
-    //       let filtered = this.allStaff;
-    //         if (this.select) {
-    //         filtered = this.allStaff.filter(
-    //         staff => staff.sortStaff.toLowerCase() === this.select.toLowerCase()
-    //     );
-    //   }
-    //   return filtered;
-    // }
+    ...mapGetters(["allDeletedStaff"]),
+        // filterDeletedStaff() {
+        //   const value= this.search.charAt(0).toUpperCase() + this.search.slice(1);
+        //   return this.allDeletedStaff.filter(function(allDeletedStaff){
+        //       return allDeletedStaff.name.indexOf(value) > -1 ||
+        //           allDeletedStaff.surname.indexOf(value) > -1 ||
+        //           allDeletedStaff.fathername.indexOf(value) > -1
+        //   })
+        // },
   },
 
   methods: {
     ...mapActions(["fetchDeletedStaff", "restoreStaff"]),
+    whichSort(id){
+      if(id.target.value === 'Фамилии'){
+        this.whoSorted = 'sort-in-dismissed-staff?field=surname'
+      }
+      else if(id.target.value === 'Сортировать по:'){
+        this.whoSorted = 'dismissed-staff'
+      }
+      else if(id.target.value === 'Количеству сделок'){
+        this.whoSorted = 'sort-in-dismissed-staff?field=deals'
+      }
+      else if(id.target.value === 'Дате Рождения'){
+        this.whoSorted = 'sort-in-dismissed-staff?field=birth_date'
+      }
+      else if(id.target.value === 'Должности'){
+        this.whoSorted = 'sort-in-dismissed-staff?field=role'
+      }
+      else {
+        this.whoSorted = 'dismissed-staff'
+      }
+      this.fetchDeletedStaff(this.whoSorted)
+    },
+    whichSearch(){
+      this.fetchDeletedStaff('search-in-dismissed-staff?searching='+this.search)
+    },
     showModal(id) {
       this.selectedId = id;
       this.selectedIdConfirm = id;
@@ -304,8 +327,8 @@ router-link {
 .go-to-staff {
   text-decoration: none;
   color: #c4c4c4;
-  position: absolute;
-  bottom: 30px;
+  position: relative;
+  margin-bottom: 50px;
   height: 49px;
 }
 .exit-btn {
@@ -321,6 +344,7 @@ router-link {
 }
 .staff-cards-container {
   width: 100%;
+  min-height: 86vh;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -390,7 +414,7 @@ router-link {
   background: #f0f2f4;
   box-shadow: 0px 5px 7px rgba(0, 0, 0, 0.4);
   width: 350px;
-  height: auto;
+  height: 430px;
   margin: 30px 30px 30px 0;
   display: flex;
   flex-direction: column;
@@ -441,7 +465,6 @@ router-link {
   color: #848484;
 }
 .deals {
-  border-right: 1px solid #dddddd;
   padding: 10px 51px;
 }
 .contacts {

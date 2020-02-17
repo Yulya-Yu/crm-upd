@@ -1,10 +1,10 @@
 <template>
-    <h1>Requests</h1>
+    <div>test</div>
 </template>
 
 <script>
 export default {
-    
+    name: 'companyedit'
 }
 </script>
 

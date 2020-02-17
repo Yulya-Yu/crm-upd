@@ -12,7 +12,8 @@
                 <div class="form">
                     <input v-bind:class="{errorcolor: loginerror, errorcolor : noneuser}"
                            type="text" v-on:click="clearLoginError()" v-model="auth.login"
-                           id="login" autocomplete="off" required maxlength="16" />
+                           id="login" readonly v-on:keydown.enter="login"
+                           onfocus="this.removeAttribute('readonly')" required maxlength="16" />
                     <label id="firstlabel" v-bind:class="{errorbordercolor: loginerror , errorbordercolor : noneuser}" for="login" class="label-name">
                         <span class="content-name" >Логин</span>
                         <transition name="slide-fade">
@@ -21,8 +22,9 @@
                     </label>
                 </div>
                 <div class="form" style="margin-top: 64px">
-                    <input  v-bind:class="{errorcolor: passworderror, errorcolor : noneuser}"
-                            type="password" maxlength="16"
+                    <input readonly
+                           onfocus="this.removeAttribute('readonly')" v-bind:class="{errorcolor: passworderror, errorcolor : noneuser}"
+                            type="password" maxlength="16" v-on:keydown.enter="login"
                             v-on:click="clearPasswordError()" v-model="auth.password"
                             id="password" autocomplete="off" required />
                     <label id="secondlabel" v-bind:class="{errorbordercolor: passworderror, errorbordercolor : noneuser}" for="password" class="label-name">
@@ -45,6 +47,7 @@
 </template>
 <script>
     import axios from 'axios';
+    import baseURL from '../../config'
     export default {
         data() {
             return{
@@ -78,20 +81,16 @@
                     document.getElementById('secondlabel').style.borderBottomColor = '#FF7373'
                 }
                 else{
-
-                    sessionStorage.setItem('login', this.auth.login);
-                    sessionStorage.setItem('password', this.auth.password);
                     axios({
                         method: 'post',
-                        auth: {
-                            username: this.auth.login,
-                            password: this.auth.password,
+                        data: {
+                            login: this.auth.login,
+                            pass: this.auth.password,
                         },
-                        url: 'http://api.catering.student.smartworld.team:2280/category/'
+                        url: baseURL + '/site/login'
                     })
                         .then((response) => {
-                            // eslint-disable-next-line no-console
-                            console.log(response.data.items)
+                            sessionStorage.setItem('token', response.data);
                             this.$router.push('/menu')
                         })
                         .catch((error) => {
@@ -111,15 +110,8 @@
                                 document.getElementById('password').style.color = '#FF7373'
                                 this.noneserver = true
                             }
-                            else {
-                                if (sessionStorage.getItem('login') === this.auth.login && sessionStorage.getItem('login') === this.auth.password){
-                                    this.$router.push('/menu')
-                                }
-                            }
                         })
-
                 }
-
             },
             clearLoginError: function () {
                 document.getElementById('firstlabel').style.borderBottomColor = '#F0F2F4'
@@ -139,6 +131,17 @@
     }
 </script>
 <style scoped>
+    @-webkit-keyframes autofill {
+        to {
+            color: #F0F2F4;
+            background: transparent;
+        }
+    }
+
+    input:-webkit-autofill {
+        -webkit-animation-name: autofill;
+        -webkit-animation-fill-mode: both;
+    }
 .form{
     width: 420px;
     position: relative;
@@ -264,7 +267,7 @@
     transform: translateX(10px);
     opacity: 0;
 }
-@media (max-width: 992px){
+@media (max-width: 1150px){
     .col-with-img{
         display: none;
     }

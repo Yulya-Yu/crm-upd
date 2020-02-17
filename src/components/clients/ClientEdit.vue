@@ -1,10 +1,10 @@
 <template>
-    <h1>Reports</h1>
+    <div>test</div>
 </template>
 
 <script>
 export default {
-    
+    name: 'clientedit'
 }
 </script>
 

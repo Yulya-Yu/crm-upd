@@ -1,7 +1,7 @@
 <template>
   <div class="category-container">
     <div class="action-btns">
-      <button @click="addCategoryModal=true" class="staff-add-btn">
+      <button @click="openAddCategoryModal()" class="staff-add-btn">
         <img src="@/assets/plus.svg" />Добавить Блюдо
       </button>
       <router-link to="/login">
@@ -19,7 +19,8 @@
             <th>Цена за порцию (руб)</th>
             <th>Примечание</th>
           </tr>
-          <tr v-for="(menuItem, index) in dishes" :key="menuItem.id">
+          <tr v-for="(menuItem, index) in dishesAll" :key="menuItem.id">
+            <transition name="slide-fade">
             <div class="modal-menu-item" v-show="itemId == index">
               <div class="confirm-question">
                 <p>Вы уверены?</p>
@@ -29,6 +30,7 @@
                 <button @click="closeItemDeleteModal" class="cancel-btn">Нет</button>
               </div>
             </div>
+            </transition>
             <td class="dish-name">
               <button @click="editModalOpen(index)" class="category-edit">
                 <img src="@/assets/edit_menu.png" />
@@ -36,11 +38,11 @@
               <button class="category-delete" @click="deleteItemFunc(index)">
                 <img src="@/assets/menu_del.svg" />
               </button>
-              {{menuItem.name}}
+              <p>{{menuItem.name}}</p>
             </td>
             <td>{{menuItem.weight}}</td>
             <td>{{menuItem.cost}}</td>
-            <td>{{menuItem.notes}}</td>
+            <td class="notes"><p>{{menuItem.notes}}</p></td>
           </tr>
         </tbody>
       </table>
@@ -55,51 +57,51 @@
             <h1>Добавить блюдо</h1>
             <div class="form" v-for="(name,index) in addDish" :key="index">
               <input
-                v-bind:id="addDish[index].type"
+                v-bind:id="name.type"
                 v-on:click="clearError(index)"
                 maxlength="50"
-                v-if="addDish[index].type === 'text'"
+                v-if="name.type === 'text'"
                 v-on:focus="clearError(index)"
-                v-model="addDish[index].dishInput"
-                v-bind:class="{errorcolor: addDish[index].nullInput, errorcolor : addDish[index].falseInput}"
+                v-model="name.dishInput"
+                v-bind:class="{errorcolor: name.nullInput, errorcolor : name.falseInput}"
                 required
               />
               <input
-                v-bind:id="addDish[index].type"
+                v-bind:id="name.type"
                 v-on:click="clearError(index)"
                 maxlength="50"
-                v-if="addDish[index].type === 'textwithnum'"
+                v-if="name.type === 'textwithnum'"
                 v-on:focus="clearError(index)"
-                v-model="addDish[index].dishInput"
-                v-bind:class="{errorcolor: addDish[index].nullInput, errorcolor : addDish[index].falseInput}"
+                v-model="name.dishInput"
+                v-bind:class="{errorcolor: name.nullInput, errorcolor : name.falseInput}"
                 required
               />
               <input
-                v-bind:id="addDish[index].type"
+                v-bind:id="name.type"
                 v-on:click="clearError(index)"
                 maxlength="5"
-                v-if="addDish[index].type === 'number'"
+                v-if="name.type === 'number'"
                 v-mask="{mask: '9{5}', placeholder: ' '}"
                 v-on:focus="clearError(index)"
-                v-model="addDish[index].dishInput"
-                v-bind:class="{errorcolor: addDish[index].nullInput, errorcolor : addDish[index].falseInput}"
+                v-model="name.dishInput"
+                v-bind:class="{errorcolor: name.nullInput, errorcolor : name.falseInput}"
                 required
               />
               <label
-                v-bind:class="{errorbordercolor: addDish[index].nullInput,errorbordercolor: addDish[index].falseInput}"
+                      v-bind:class="{errorbordercolor: addDish[index].nullInput||name.falseInput,succesbordercolor: !addDish[index].nullInput && !name.falseInput}"
                 :for="addDish.type"
                 class="label-name"
               >
-                <span class="content-name">{{addDish[index].name}}</span>
+                <span class="content-name">{{name.name}}</span>
                 <transition name="slide-fade">
                   <span
-                    v-if="addDish[index].nullInput === true"
+                    v-if="name.nullInput === true"
                     class="content-name content-name-error"
                   >Обязательное поле</span>
                 </transition>
                 <transition name="slide-fade">
                   <span
-                    v-if="addDish[index].falseInput === true"
+                    v-if="name.falseInput === true"
                     style="top: 54px"
                     class="content-name content-name-error"
                   >Неправильный формат заполнения</span>
@@ -111,7 +113,6 @@
         </div>
       </div>
     </div>
-
     <div class="add-category-modal" v-if="editCategoryModal == true">
       <div class="mask">
         <div class="category-modal-container">
@@ -153,7 +154,7 @@
                 required
               />
               <label
-                v-bind:class="{errorbordercolor: addDish[index].nullInput,errorbordercolor: addDish[index].falseInput}"
+                      v-bind:class="{errorbordercolor: addDish[index].nullInput||name.falseInput,succesbordercolor: !addDish[index].nullInput && !name.falseInput}"
                 :for="addDish.type"
                 class="label-name"
               >
@@ -183,6 +184,7 @@
 
 <script>
 import axios from "axios";
+import baseURL from '../../config';
 import { mapGetters, mapActions } from "vuex";
 
 export default {
@@ -206,14 +208,14 @@ export default {
           dishInput: null
         },
         {
-          name: "Вес блюда",
+          name: "Вес блюда (гр)",
           type: "number",
           falseInput: false,
           nullInput: false,
           dishInput: null
         },
         {
-          name: "Цена блюда",
+          name: "Цена блюда (руб)",
           type: "number",
           falseInput: false,
           nullInput: false,
@@ -230,20 +232,22 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["menuAll"])
-  },
-  beforeMount() {
-    this.getDish();
+    ...mapGetters(["dishesAll"])
   },
   methods: {
+    openAddCategoryModal(){
+      for (let i = 0; i < this.addDish.length;i++){
+        this.addDish[i].dishInput = null;
+        this.addDish[i].falseInput = false;
+        this.addDish[i].nullInput = false;
+      }
+      this.addCategoryModal = true
+    },
     dishEdit() {
       if (this.counter === 4) {
         axios({
           method: "post",
-          auth: {
-            username: sessionStorage.getItem("login"),
-            password: sessionStorage.getItem("password")
-          },
+          headers: { Authorization: `Bearer ${sessionStorage.getItem('token')}` } ,
           data: {
             category_id: this.$route.params.cat_id,
             name: this.addDish[0].dishInput,
@@ -251,9 +255,10 @@ export default {
             weight: this.addDish[2].dishInput,
             notes: this.addDish[3].dishInput
           },
-          url: `http://api.catering.student.smartworld.team:2280/dish/update?id=${this.editedId}`
+          url: baseURL +`/dish/update?id=${this.editedId}`
         })
           .then(response => {
+              this.fetchDishes(this.$route.params.cat_id)
             // eslint-disable-next-line no-console
             console.log(response);
           })
@@ -273,28 +278,33 @@ export default {
     dishNameEditValid() {
       this.counter = 0;
       for (let i = 0; i < this.addDish.length; i++) {
-        if (this.addDish[i].type === "textwithnum") {
-          this.counter++;
-        } else if (
-          this.addDish[i].dishInput === null ||
-          this.addDish[i].dishInput === undefined ||
-          this.addDish[i].dishInput === ""
-        ) {
-          this.addDish[i].nullInput = true;
-        } else if (this.addDish[i].type === "text") {
-          let emailCodeRegex = new RegExp(/^([А-ЯЁа-яё]{1}[а-яё]{1,49})$/);
+        if (this.addDish[i].dishInput === null || this.addDish[i].dishInput === undefined || this.addDish[i].dishInput === "") {
+          if (this.addDish[i].type === "textwithnum") {
+            this.counter++;
+          }
+          else{
+            this.addDish[i].nullInput = true;
+          }
+        }
+        else if (this.addDish[i].type === "text") {
+          let emailCodeRegex = new RegExp(/^([А-Яа-я]{1}-? ?\(?\)?)+([а-я]||(-? ?\(?\)?))+([а-я]\)?){1}$/);
           let isMenuNameValid = emailCodeRegex.test(this.addDish[i].dishInput);
           if (isMenuNameValid === false) {
             this.addDish[i].falseInput = true;
-          } else {
+          }
+          else {
             this.counter++;
           }
-        } else if (this.addDish[i].type === "number") {
-          this.counter++;
+        }
+        else if (this.addDish[i].type === "number") {
+          if (this.addDish[i].dishInput[0] == 0){
+            this.addDish[i].falseInput = true;
+          }
+          else {
+            this.counter++;
+          }
         } else if (this.addDish[i].type === "textwithnum") {
-          let emailCodeRegex = new RegExp(
-            /^([А-ЯЁа-яё0-9]{1}([а-яё0-9]№?.?,?-? ?){1,49})$/
-          );
+          let emailCodeRegex = new RegExp(/^([А-Яа-я0-9]{1}-? ?\(?\)?)+([а-я0-9]||(-? ?\(?\)?))+([а-я0-9]\)?){1}$/);
           let isMenuNameValid = emailCodeRegex.test(this.addDish[i].dishInput);
           if (isMenuNameValid === false) {
             this.addDish[i].falseInput = true;
@@ -307,52 +317,41 @@ export default {
     },
     closeEditModal() {
       this.editedId = null;
-      this.addDish[0].dishInput = null;
-      this.addDish[1].dishInput = null;
-      this.addDish[2].dishInput = null;
-      this.addDish[3].dishInput = null;
+      for (let i = 0; i < this.addDish.length;i++){
+        this.addDish[i].dishInput = null;
+        this.addDish[i].falseInput = false;
+        this.addDish[i].nullInput = false;
+      }
       this.editCategoryModal = false;
+      this.addCategoryModal = false;
     },
     editModalOpen(id) {
-      this.editedId = this.dishes[id].id;
+      this.editedId = this.dishesAll[id].id;
       this.editCategoryModal = true;
-      this.addDish[0].dishInput = this.dishes[id].name;
-      this.addDish[1].dishInput = this.dishes[id].weight;
-      this.addDish[2].dishInput = this.dishes[id].cost;
-      this.addDish[3].dishInput = this.dishes[id].notes;
-    },
-    getDish() {
-      axios({
-        method: "get",
-        auth: {
-          username: sessionStorage.getItem("login"),
-          password: sessionStorage.getItem("password")
-        },
-        url: `http://api.catering.student.smartworld.team:2280/category/dishes?id=${this.$route.params.cat_id}`
-      })
-        .then(response => {
-          this.dishes = response.data;
-          // eslint-disable-next-line no-console
-          console.log(response.data);
-        })
-        .catch(error => {
-          // eslint-disable-next-line no-console
-          console.log(error.response.status);
-        });
+      this.addDish[0].dishInput = this.dishesAll[id].name;
+      this.addDish[1].dishInput = this.dishesAll[id].weight;
+      this.addDish[2].dishInput = this.dishesAll[id].cost;
+      this.addDish[3].dishInput = this.dishesAll[id].notes;
     },
     dishNameValid() {
       this.counter = 0;
       for (let i = 0; i < this.addDish.length; i++) {
-        if (this.addDish[i].type === "textwithnum") {
-          this.counter++;
-        } else if (
+        if (
           this.addDish[i].dishInput === null ||
           this.addDish[i].dishInput === undefined ||
           this.addDish[i].dishInput === ""
         ) {
-          this.addDish[i].nullInput = true;
-        } else if (this.addDish[i].type === "text") {
-          let emailCodeRegex = new RegExp(/^([А-ЯЁа-яё]{1}[а-яё]{1,49})$/);
+          if (this.addDish[i].dishInput === null || this.addDish[i].dishInput === undefined || this.addDish[i].dishInput === "") {
+            if (this.addDish[i].type === "textwithnum") {
+              this.counter++;
+            }
+            else{
+              this.addDish[i].nullInput = true;
+            }
+          }
+        }
+        else if (this.addDish[i].type === "text") {
+          let emailCodeRegex = new RegExp(/^([А-Яа-я]{1}-? ?\(?\)?)+([а-я]||(-? ?\(?\)?))+([а-я]\)?){1}$/);
           let isMenuNameValid = emailCodeRegex.test(this.addDish[i].dishInput);
           if (isMenuNameValid === false) {
             this.addDish[i].falseInput = true;
@@ -360,11 +359,14 @@ export default {
             this.counter++;
           }
         } else if (this.addDish[i].type === "number") {
-          this.counter++;
+          if (this.addDish[i].dishInput[0] == 0){
+            this.addDish[i].falseInput = true;
+          }
+          else {
+            this.counter++;
+          }
         } else if (this.addDish[i].type === "textwithnum") {
-          let emailCodeRegex = new RegExp(
-            /^([А-ЯЁа-яё0-9]{1}([а-яё0-9]№?.?,?-? ?){1,49})$/
-          );
+          let emailCodeRegex = new RegExp(/^([А-Яа-я0-9]{1}-? ?\(?\)?)+([а-я0-9]||(-? ?\(?\)?))+([а-я0-9]\)?){1}$/);
           let isMenuNameValid = emailCodeRegex.test(this.addDish[i].dishInput);
           if (isMenuNameValid === false) {
             this.addDish[i].falseInput = true;
@@ -379,10 +381,7 @@ export default {
       if (this.counter === 4) {
         axios({
           method: "post",
-          auth: {
-            username: sessionStorage.getItem("login"),
-            password: sessionStorage.getItem("password")
-          },
+          headers: { Authorization: `Bearer ${sessionStorage.getItem('token')}` } ,
           data: {
             category_id: this.$route.params.cat_id,
             name: this.addDish[0].dishInput,
@@ -390,9 +389,10 @@ export default {
             weight: this.addDish[2].dishInput,
             notes: this.addDish[3].dishInput
           },
-          url: `http://api.catering.student.smartworld.team:2280/dish/create`
+          url: baseURL +`/dish/create`
         })
           .then(response => {
+              this.fetchDishes(this.$route.params.cat_id)
             // eslint-disable-next-line no-console
             console.log(response);
           })
@@ -412,17 +412,15 @@ export default {
       this.addDish[id].falseInput = false;
       this.addDish[id].nullInput = false;
     },
-    ...mapActions(["fetchMenu", "deleteMenuItems"]),
+    ...mapActions(["fetchDishes", "deleteMenuItems"]),
     deleteDish() {
       axios({
         method: "post",
-        auth: {
-          username: sessionStorage.getItem("login"),
-          password: sessionStorage.getItem("password")
-        },
-        url: `http://api.catering.student.smartworld.team:2280/dish/delete?id=${this.deletedDishId}`
+        headers: { Authorization: `Bearer ${sessionStorage.getItem('token')}` } ,
+        url: baseURL +`/dish/delete?id=${this.deletedDishId}`
       })
         .then(response => {
+            this.fetchDishes(this.$route.params.cat_id)
           // eslint-disable-next-line no-console
           console.log(response);
         })
@@ -437,7 +435,7 @@ export default {
     },
     deleteItemFunc(index) {
       this.itemId = index;
-      this.deletedDishId = this.dishes[index].id;
+      this.deletedDishId = this.dishesAll[index].id;
     },
     logOut() {
       sessionStorage.removeItem("login"),
@@ -446,12 +444,36 @@ export default {
     }
   },
   created() {
-    this.fetchMenu();
+    this.fetchDishes(this.$route.params.cat_id);
   }
 };
 </script>
 
 <style scoped>
+  @-moz-document url-prefix() {
+    input{
+      box-shadow: none;
+    }
+    input:focus {
+      box-shadow: 0 0 10px rgba(0,0,0,.5)
+    }
+  }
+  @-webkit-keyframes autofill {
+    to {
+      color: #353541;
+      background: transparent;
+    }
+  }
+  @-webkit-keyframes autofill {
+    to {
+      color: #353541;
+      background: transparent;
+    }
+  }
+  input:-webkit-autofill {
+    -webkit-animation-name: autofill;
+    -webkit-animation-fill-mode: both;
+  }
 #modal-close-btn2 {
   background: none;
   border: none;
@@ -520,9 +542,9 @@ export default {
 .category-container {
   background: #e1e1e1;
   width: 100%;
-  height: 100vh;
+  height: 100%;
   margin-left: 147px;
-  overflow: hidden;
+ 
 }
 
 .action-btns {
@@ -544,6 +566,7 @@ export default {
   display: flex;
   align-items: center;
   cursor: pointer;
+  transition: 0.3s;
 }
 .staff-add-btn:hover {
   background-color: #18181e;
@@ -565,17 +588,19 @@ router-link {
   border: none;
   margin-left: 30px;
   cursor: pointer;
+  transition: 0.3s;
 }
 .exit-btn:hover {
   background-color: #18181e;
 }
 
 table {
-  width: 900px;
+  width: 980px;
   margin: 67px auto;
   text-align: center;
   background: #f0f2f4;
   border: 1px solid #353541;
+  vertical-align: middle;
 }
 
 th {
@@ -595,6 +620,7 @@ tr {
   font-size: 14px;
   line-height: 16px;
   color: #353541;
+  margin:auto;
 }
 .category-delete img,
 .category-edit img {
@@ -615,7 +641,37 @@ tr {
   flex-direction: row;
   align-items: center;
   height: inherit;
+  height: auto;
+  width: 150px;
+  margin-right: auto;
+  margin-left: 10px;
 }
+
+.notes {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 150px;
+  height: auto;
+  margin: auto;
+  top: -10px;
+
+}
+
+.dish-name p, .notes p{
+width: inherit;
+word-wrap: break-word;
+margin: 10px 10px;
+text-align: center; 
+vertical-align: top;
+}
+
+td {
+    text-align: center; 
+    vertical-align: middle;
+    margin-top: auto;
+}
+
 .mask {
   position: fixed;
   z-index: 9998;
@@ -691,7 +747,6 @@ tr {
 }
 .form label {
   position: absolute;
-  border-bottom: 1px solid #353541;
   bottom: 0px;
   left: 0;
   right: 0;

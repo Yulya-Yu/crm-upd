@@ -2,16 +2,17 @@
   <div class="staff-list-containers">
     <div class="staff-nav">
       <div class="dropdown">
-        <select v-on:click="fetchStaff(`${whoSorted}`)" v-on:change="whichSort" class="dropbtn">
-          <option selected disabled value>Сортировать по:</option>
+        <select v-on:change="whichSort" class="dropbtn">
+          <option selected value>Сортировать по:</option>
           <option>Количеству сделок</option>
           <option>Фамилии</option>
           <option>Дате Рождения</option>
+          <option>Должности</option>
         </select>
       </div>
       <div class="search-field">
         <input type="text" v-model="search" />
-        <input type="submit" class="search-btn" value="поиск" />
+        <input type="submit" class="search-btn" value="поиск" v-on:click="whichSearch"/>
       </div>
       <div class="action-btns">
         <router-link to="/staffregister">
@@ -27,7 +28,7 @@
       </div>
     </div>
     <div class="staff-cards-container">
-      <div class="staff-card" v-for="staff in filteredStaff" :key="staff.id" :staff="staff">
+      <div class="staff-card" v-for="staff in allStaff" :key="staff.id" :staff="staff">
         <div class="header">
           <div class="employee">
             <h5>{{staff.surname}} {{staff.name}} {{staff.fathername}}</h5>
@@ -39,7 +40,7 @@
             </button>
             <div id="options-content">
               <router-link v-bind:to="{name:'staffedit', params: {staff_id: staff.id}}">
-                <button @click="goToEdit(staff.id)">
+                <button>
                   <img src="@/assets/edit.svg" class="options-icon" /> Редактировать
                 </button>
               </router-link>
@@ -68,6 +69,7 @@
         <div class="stats">
           <p class="deals">Cделки: {{staff.deals}}</p>
         </div>
+
         <div class="contacts">
           <div class="contact-data">
             <h5>Контакты:</h5>
@@ -100,9 +102,11 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 
+
 export default {
   name: "stafflist",
   components: {},
+
   data() {
     return {
       whoSorted: 'staff',
@@ -115,35 +119,42 @@ export default {
   },
   computed: {
     ...mapGetters(["allStaff"]),
-      filteredStaff() {
-          const value= this.search.charAt(0).toUpperCase() + this.search.slice(1);
-          return this.allStaff.filter(function(allStaff){
-              return allStaff.name.indexOf(value) > -1 ||
-                  allStaff.surname.indexOf(value) > -1 ||
-                  allStaff.fathername.indexOf(value) > -1
-          })
-      }
+// filteredStaff() {
+//           const value= this.search.charAt(0).toUpperCase() + this.search.slice(1);
+//           return this.allStaff.filter(function(allStaff){
+//               return allStaff.name.indexOf(value) > -1 ||
+//                   allStaff.surname.indexOf(value) > -1 ||
+//                   allStaff.fathername.indexOf(value) > -1
+//           })
+//       }
   },
 
   methods: {
-      ...mapActions(["fetchStaff", "deleteStaff"]),
-      whichSort(id){
-        if(id.target.value === 'Фамилии'){
-            this.whoSorted = 'sort-by?sort=surname'
-        }
-          else if(id.target.value === 'Количеству сделок'){
-              this.whoSorted = 'sort-by?sort=deals'
-          }
-          else if(id.target.value === 'Дате Рождения'){
-              this.whoSorted = 'sort-by?sort=birth_date'
-          }
-          else {
-            this.whoSorted = 'staff'
-        }
-          // eslint-disable-next-line no-console
-            console.log(id)
-      },
-
+    ...mapActions(["fetchStaff", "deleteStaff"]),
+    whichSort(id){
+      if(id.target.value === 'Фамилии'){
+        this.whoSorted = 'sort-by?field=surname'
+      }
+      else if(id.target.value === 'Сортировать по:'){
+        this.whoSorted = 'staff'
+      }
+      else if(id.target.value === 'Количеству сделок'){
+        this.whoSorted = 'sort-by?field=deals'
+      }
+      else if(id.target.value === 'Дате Рождения'){
+        this.whoSorted = 'sort-by?field=birth_date'
+      }
+      else if(id.target.value === 'Должности'){
+        this.whoSorted = 'sort-by?field=role'
+      }
+      else {
+        this.whoSorted = 'staff'
+      }
+      this.fetchStaff(this.whoSorted)
+    },
+    whichSearch(){
+      this.fetchStaff('search?searching='+this.search)
+    },
     showModal(id) {
       this.selectedId = id;
       this.selectedIdConfirm = id;
@@ -163,7 +174,7 @@ export default {
   },
 
   created() {
-    this.fetchStaff();
+    this.fetchStaff(this.whoSorted);
   }
 };
 </script>
@@ -245,13 +256,14 @@ p {
   display: flex;
   align-items: center;
   cursor: pointer;
+  transition: 0.3s;
 }
 #options-content button:hover {
-  background-color: #18181e;
+  background-color: #18181E;
 }
 /* Change color of dropdown links on hover */
 .dropdown-content a:hover {
-  background-color: #18181e;
+  background-color: #18181E;
 }
 /* Show the dropdown menu on hover */
 .dropdown:hover .dropdown-content {
@@ -292,9 +304,10 @@ input {
   width: 90px;
   cursor: pointer;
   padding-left: 0;
+  transition: 0.3s;
 }
 .search-btn:hover {
-  background-color: #18181e;
+  background-color: #18181E;
 }
 .action-btns {
   margin-right: 30px;
@@ -317,10 +330,11 @@ input {
   cursor: pointer;
   justify-content: center;
   width: 220px;
+  transition: 0.3s;
 }
 .staff-add-btn:hover,
 .staff-delete-btn:hover {
-  background-color: #18181e;
+  background-color: #18181E;
 }
 .staff-add-btn img,
 .staff-delete-btn img {
@@ -328,6 +342,7 @@ input {
 }
 router-link {
   text-decoration: none;
+  color: #c4c4c4;
 }
 .go-to-deleted router-link {
   text-decoration: none;
@@ -343,12 +358,14 @@ router-link {
   border: none;
   margin-left: 30px;
   cursor: pointer;
+  transition: 0.3s;
 }
 .exit-btn:hover {
-  background-color: #18181e;
+  background-color: #18181E;
 }
 .staff-cards-container {
   width: 100%;
+  min-height: 86vh; 
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -366,6 +383,7 @@ router-link {
   align-items: center;
   cursor: pointer;
   width: 100%;
+  transition: 0.3s;
 }
 .options-icon {
   margin-right: 10px;
@@ -373,7 +391,7 @@ router-link {
   height: 20px;
 }
 #options-content button:hover {
-  background-color: #18181e;
+  background-color: #18181E;
 }
 .modal {
   display: flex;
@@ -403,6 +421,9 @@ router-link {
   text-align: center;
   color: #353541;
 }
+.confirm-btns button:hover{
+  filter: brightness(1.1);
+}
 .delete-btn-modal {
   width: 39px;
   height: 24px;
@@ -418,7 +439,7 @@ router-link {
   background: #f0f2f4;
   box-shadow: 0px 5px 7px rgba(0, 0, 0, 0.4);
   width: 350px;
-  height: auto;
+  height: 430px;;
   margin: 30px 30px 30px 0;
   display: flex;
   flex-direction: column;
@@ -607,7 +628,6 @@ router-link {
 
 @media screen and (max-width: 1300px) {
   .staff-nav {
-    justify-content: flex-start;
     height: 49px;
     width: 100%;
   }
@@ -634,7 +654,7 @@ router-link {
   .staff-add-btn {
     padding-left: 20px;
     padding-right: 20px;
-    margin-left: 30px;
+   
   }
 
   .staff-delete-btn {
@@ -678,7 +698,7 @@ router-link {
   .staff-add-btn {
     padding-left: 20px;
     padding-right: 20px;
-    margin-left: 30px;
+
     width: 220px;
   }
 
